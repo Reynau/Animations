@@ -1,18 +1,26 @@
-<canvas id="gc" width="400" height="400"></canvas>
-
+<canvas id="gc" width="800" height="800"></canvas>
+<script type="text/javascript" src="dat.gui.min.js"></script>
 <script>
+
+var vars = {
+	max_stars: 2000,	// Max stars
+	n_stars: 200,		// Num stars
+	rt: 0.004,			// Radio ratio
+	v: 0.1,				// Speed ratio
+	star_c: "#FFFFFF",	// Star color
+	line_c: "#202020", // Line color
+}
+
 var stars = [];
 
 function createStar (w, h) {
 	return {
-		rt: 0.004,	// Radio ratio
-		v: 0.1,		// Speed ratio
 		x: Math.random() * w,
 		y: Math.random() * h,
 		px: this.x,	// Previous point
 		py: this.y, // Previous point
 		z: distance(this.x, this.y, w/2, h/2),
-		r: this.rt*this.z,
+		r: vars.rt*this.z,
 		update: function () {
 			var xc = w/2;
 			var yc = h/2;
@@ -21,47 +29,36 @@ function createStar (w, h) {
 
 			this.px = this.x;
 			this.py = this.y;
-			this.x += this.v*xv;
-			this.y += this.v*yv;
+			this.x += vars.v*xv;
+			this.y += vars.v*yv;
 			this.z = distance(this.x, this.y, w/2, h/2);
-			this.r = this.rt*this.z;
+			this.r = vars.rt*this.z;
 
 			// Restart star when out of view
-			if (this.x < 0 || this.x > 400 || this.y < 0 || this.y > 400) {
+			if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) {
 				this.x = Math.random() * w;
 				this.y = Math.random() * h;
 				this.px = this.x;
 				this.py = this.y;
 				this.z = distance(this.x, this.y, w/2, h/2);
-				this.r = this.rt*this.z;
+				this.r = vars.rt*this.z;
 			}
 		},
 		draw: function () {
 			// Draw points
 			ctx.beginPath();
 			ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
-			ctx.fillStyle = "white";
+			ctx.fillStyle = vars.star_c;
 			ctx.fill();
 
 			// Draw lines
 			ctx.beginPath();
 			ctx.moveTo(this.px, this.py);
 			ctx.lineTo(this.x, this.y);
-			ctx.strokeStyle = "#202020";
+			ctx.strokeStyle = vars.line_c;
 			ctx.stroke();
 		}
 	}
-}
-
-window.onload = function () {
-	canv = document.getElementById("gc");
-	ctx = canv.getContext("2d");
-
-	for (var i = 0; i < 100; ++i) {
-		stars[i] = createStar(canv.width, canv.height);
-	}
-
-	setInterval(loop, 1000/30);
 }
 
 function loop () {
@@ -70,7 +67,7 @@ function loop () {
 }
 
 function update () {
-	for (var i = 0; i < 100; ++i) {
+	for (var i = 0; i < vars.n_stars; ++i) {
 		stars[i].update();
 	}
 }
@@ -80,7 +77,7 @@ function draw () {
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, canv.width, canv.height);
 	// Stars
-	for (var i = 0; i < 100; ++i) {
+	for (var i = 0; i < vars.n_stars; ++i) {
 		stars[i].draw();
 	}
 }
@@ -91,6 +88,25 @@ function distance (x1, y1, x2, y2) {
 
 function square (x) {
 	return x*x;
+}
+
+
+window.onload = function () {
+	canv = document.getElementById("gc");
+	ctx = canv.getContext("2d");
+
+	for (var i = 0; i < vars.max_stars; ++i) {
+		stars[i] = createStar(canv.width, canv.height);
+	}
+
+	var gui = new dat.GUI();
+	gui.add(vars, 'n_stars', 0, vars.max_stars);
+	gui.add(vars, 'rt', 0, 0.005);
+	gui.add(vars, 'v', 0, 1);
+	gui.add(vars, 'star_c');
+	gui.add(vars, 'line_c');
+
+	setInterval(loop, 1000/30);
 }
 
 </script>
