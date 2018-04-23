@@ -3,15 +3,19 @@
 
 var vars = {
 	n_drops: 300,
+	lightning_total_frames: 3,
 }
 
 var drops = [];
+var lightning = false;
+var lightning_frames = 0;
 
 function createDrop (w, h) {
 	return {
 		x: Math.random() * w,
 		y: Math.random() * h,
-		yv: random(10,20),
+		yv: random(15,20),
+		length: random(9,11),
 		update: function () {
 			this.y += this.yv;
 
@@ -21,9 +25,9 @@ function createDrop (w, h) {
 			// Draw drops
 			ctx.beginPath();
 			ctx.moveTo(this.x, this.y);
-			ctx.lineTo(this.x, this.y + 10);
+			ctx.lineTo(this.x, this.y + this.length);
 			ctx.lineWidth = 2;
-			ctx.strokeStyle = "#050580";
+			ctx.strokeStyle = "#79aeff";
 			ctx.stroke();
 		}
 	}
@@ -41,9 +45,27 @@ function update () {
 }
 
 function draw () {
-	// Background
-	ctx.fillStyle = "#E6E6FA";
-	ctx.fillRect(0, 0, canv.width, canv.height);
+	if (lightning) {
+		// Background
+		ctx.fillStyle = "#ffffd2";
+		ctx.fillRect(0, 0, canv.width, canv.height);
+
+		++lightning_frames;
+		console.log(lightning_frames);
+		if (lightning_frames == vars.lightning_total_frames) {
+			lightning = false;
+			lightning_frames = 0;
+		}
+	}
+	else {
+		// Background
+		//ctx.fillStyle = "#E6E6FA";
+		ctx.fillStyle = "#002040";
+		ctx.fillRect(0, 0, canv.width, canv.height);
+
+		var lightning_rand = random(1,50);
+		if (lightning_rand === 10) lightning = true;
+	}
 
 	for (var i = 0; i < vars.n_drops; ++i) {
 		drops[i].draw();
