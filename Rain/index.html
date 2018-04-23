@@ -11,10 +11,10 @@ var vars = {
 	drop_speed_diff: 5,
 	drop_length: 9,
 	drop_length_diff: 2,
-	lightning_probability: 50,
+	lightning_probability: 100,
 	lightning_total_frames: 3,
 	lightning_color: "#ffffd2",
-	wind_probability: 100,
+	wind_probability: 80,
 	wind_total_frames: 15,
 	wind_force: 0,
 }
@@ -53,10 +53,17 @@ function createDrop (w, h) {
 			}
 		},
 		draw: function () {
+			var dist = distance(this.px, this.py, this.x, this.y);
+			var x = this.x - this.px;
+			var y = this.y - this.py;
+
+			var ux = x / module(x,y);
+			var uy = y / module(x,y);
+
 			// Draw drops
 			ctx.beginPath();
 			ctx.moveTo(this.x, this.y);
-			ctx.lineTo(this.x, this.y + this.length);
+			ctx.lineTo(this.x + ux * this.length * 1.1, this.y + uy * this.length * 1.1);
 			ctx.lineWidth = 2;
 			ctx.strokeStyle = vars.drop_color;
 			ctx.stroke();
@@ -153,6 +160,18 @@ window.onload = function () {
 
 function random(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function module (x, y) {
+	return Math.sqrt(square(x) + square(y));
+}
+
+function distance (x1, y1, x2, y2) {
+	return Math.sqrt(square(x1 - x2) + square(y1 - y2));
+}
+
+function square (x) {
+	return x*x;
 }
 
 </script>
