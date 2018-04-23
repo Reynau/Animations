@@ -4,7 +4,7 @@
 
 var vars = {
 	max_stars: 2000,	// Max stars
-	n_stars: 200,		// Num stars
+	n_stars: 400,		// Num stars
 	rt: 0.004,			// Radio ratio
 	v: 0.1,				// Speed ratio
 	star_c: "#FFFFFF",	// Star color
@@ -21,6 +21,7 @@ function createStar (w, h) {
 		py: this.y, // Previous point
 		z: distance(this.x, this.y, w/2, h/2),
 		r: vars.rt*this.z,
+		out: false,	// This var keep updating the star one frame after going outside of the canvas to draw the exiting line
 		update: function () {
 			var xc = w/2;
 			var yc = h/2;
@@ -35,21 +36,29 @@ function createStar (w, h) {
 			this.r = vars.rt*this.z;
 
 			// Restart star when out of view
-			if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) {
+			if (this.out) {
 				this.x = Math.random() * w;
 				this.y = Math.random() * h;
 				this.px = this.x;
 				this.py = this.y;
 				this.z = distance(this.x, this.y, w/2, h/2);
 				this.r = vars.rt*this.z;
+				this.out = false;
 			}
+			else if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) {
+				this.out = true; // Keep calculating one more frame to draw the lanes correctly
+			}
+
+				
 		},
 		draw: function () {
 			// Draw points
-			ctx.beginPath();
-			ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
-			ctx.fillStyle = vars.star_c;
-			ctx.fill();
+			if (!this.out) { // If the point is outside of the canvas, we dont need to draw it
+				ctx.beginPath();
+				ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
+				ctx.fillStyle = vars.star_c;
+				ctx.fill();
+			}
 
 			// Draw lines
 			ctx.beginPath();
