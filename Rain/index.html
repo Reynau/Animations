@@ -21,6 +21,7 @@ var vars = {
 	light_probability: 1,
 	light_max_frames: 5,
 	light_min_frames: 3,
+	light_frames: 5,
 	light_color: "#ffffd2",
 
 	// Wind
@@ -141,7 +142,7 @@ function update_lightning () {
 		var lightning_rand = random(0, 100);
 		if (lightning_rand <= vars.light_probability) {
 			lightning = true;
-			vars.light_max_frames = random_round(vars.light_min_frames, vars.light_max_frames);
+			vars.light_frames = random_round(vars.light_min_frames, vars.light_max_frames);
 		}
 	}
 }
@@ -196,15 +197,16 @@ function loadControls () {
 	wind_controls.add(vars, 'wind_probability', 0, 100);
 	wind_controls.add(vars, 'wind_min_speed', 0, 50);
 	wind_controls.add(vars, 'wind_max_speed', 0, 50);
-	wind_controls.add(vars, 'wind_speed', 0, 50);
+	wind_controls.add(vars, 'wind_speed', 0, 50).listen();
 	wind_controls.add(vars, 'wind_force', -50, 50).listen();;
 
 	var lightning_controls = gui.addFolder("Lightning");
 	lightning_controls.add(vars, 'automatic_lightning');
 	lightning_controls.add(vars, 'light_probability', 0, 100);
 	lightning_controls.add(vars, 'light_color');
-	lightning_controls.add(vars, 'light_min_frames', 0, 100);
-	lightning_controls.add(vars, 'light_max_frames', 0, 100);
+	lightning_controls.add(vars, 'light_min_frames', 0, 50);
+	lightning_controls.add(vars, 'light_max_frames', 0, 50);
+	lightning_controls.add(vars, 'light_frames', 0, 100).listen();
 
 	general_controls.open();
 	drop_controls.open();
