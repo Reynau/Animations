@@ -3,18 +3,29 @@
 <script>
 
 var vars = {
-	n_drops: 800,
-	max_n_drops: 1500,
+	// General
 	background_color: "#002040",
+	max_gravity: 100,
+	min_gravity: 10,
+	gravity: 20,
+
+	// Drops
+	n_drops: 800,
+	max_n_drops: 5000,
 	drop_color: "#79aeff",
-	drop_speed: 15,
-	drop_speed_diff: 5,
 	drop_length: 9,
 	drop_length_diff: 2,
-	lightning_probability: 100,
-	lightning_total_frames: 5,
-	lightning_color: "#ffffd2",
-	wind_probability: 80,
+
+	// Lightning
+	automatic_lightning: true,
+	light_probability: 1,
+	light_max_frames: 5,
+	light_min_frames: 3,
+	light_color: "#ffffd2",
+
+	// Wind
+	automatic_wind: true,
+	wind_probability: 1.25,
 	wind_total_frames: 15,
 	wind_force: 0,
 	wind_max_speed: 20,
@@ -36,23 +47,21 @@ function createDrop (w, h) {
 	return {
 		x: random(-margin, w + margin),
 		y: Math.random() * h,
+		weight: random_round(6, 10),
 		px: this.x,
 		py: this.y,
-		yv: random(vars.drop_speed, vars.drop_speed + vars.drop_speed_diff),
-		length: random(vars.drop_length, vars.drop_length_diff),
+		length: random_round(vars.drop_length, vars.drop_length_diff),
 		update: function () {
 			this.px = this.x;
 			this.py = this.y;
 
+			this.drop_speed = this.weight * vars.gravity * 0.1;
+
 			this.x += vars.wind_force;
-			this.y += this.yv;
+			this.y += this.drop_speed
 			
 			if (this.y > h + this.length || this.x > w + margin || this.x < -margin) {
-				this.yv = random(vars.drop_speed, vars.drop_speed + vars.drop_speed_diff),
-				this.x = random(-margin, w + margin);
-				this.y = 0 - this.yv;
-				this.px = this.x;
-				this.py = this.y;
+				this.reset();
 			}
 		},
 		draw: function () {
@@ -70,6 +79,13 @@ function createDrop (w, h) {
 			ctx.lineWidth = 2;
 			ctx.strokeStyle = vars.drop_color;
 			ctx.stroke();
+		},
+		reset: function () {
+			this.drop_speed = this.weight * vars.gravity * 0.1;
+			this.x = random_round(-margin, w + margin);
+			this.y = random_round(-this.drop_speed, 0) - this.drop_speed;
+			this.px = this.x;
+			this.py = this.y;
 		}
 	}
 }
@@ -80,12 +96,21 @@ function loop () {
 }
 
 function update () {
+	if (vars.automatic_wind) update_wind();
+	if (vars.automatic_lightning) update_lightning();
+
+	for (var i = 0; i < vars.n_drops; ++i) {
+		drops[i].update();
+	}
+}
+
+function update_wind () {
 	if (vars.wind_probability > 0 && wind) {
 		wind_sin += (Math.PI / vars.wind_total_frames);
 		if (wind_dir === 0) vars.wind_force = -(Math.sin(wind_sin) * vars.wind_speed);
 		if (wind_dir === 1) vars.wind_force = Math.sin(wind_sin) * vars.wind_speed;
 		++wind_frames;
-		if (wind_frames === vars.wind_total_frames) {
+		if (wind_frames >= vars.wind_total_frames) {
 			wind_sin = 0;
 			vars.wind_force = 0;
 			wind_frames = 0;
@@ -93,33 +118,31 @@ function update () {
 		}
 	}
 	else if (vars.wind_probability > 0) {
-		var wind_rand = random(1, vars.wind_probability);
-		if (wind_rand === vars.wind_probability) {
+		var wind_rand = random(0, 100);
+		if (wind_rand <= vars.wind_probability) {
 			wind = true;
-			wind_dir = random(0,1);
-			vars.wind_speed = random(vars.wind_min_speed, vars.wind_max_speed);
+			wind_dir = random_round(0,1);
+			vars.wind_speed = random_round(vars.wind_min_speed, vars.wind_max_speed);
 			vars.wind_total_frames = vars.wind_speed * 5;
 		}
 	}
+}
 
-	if (vars.lightning_probability > 0 && lightning) {
+function update_lightning () {
+	if (vars.light_probability > 0 && lightning) {
 		++lightning_frames;
 
-		if (lightning_frames === vars.lightning_total_frames) {
+		if (lightning_frames >= vars.light_max_frames) {
 			lightning_frames = 0;
 			lightning = false;
 		}
 	}
-	else if (vars.lightning_probability > 0) {
-		var lightning_rand = random(1, vars.lightning_probability);
-		if (lightning_rand === vars.lightning_probability) {
+	else if (vars.light_probability > 0) {
+		var lightning_rand = random(0, 100);
+		if (lightning_rand <= vars.light_probability) {
 			lightning = true;
-			vars.lightning_total_frames = random(3,5);
+			vars.light_max_frames = random_round(vars.light_min_frames, vars.light_max_frames);
 		}
-	}
-
-	for (var i = 0; i < vars.n_drops; ++i) {
-		drops[i].update();
 	}
 }
 
@@ -134,7 +157,7 @@ function draw () {
 function drawBackground () {
 	var color;
 
-	if (lightning) color = vars.lightning_color;
+	if (lightning) color = vars.light_color;
 	else color = vars.background_color;
 
 	ctx.fillStyle = color;
@@ -146,17 +169,7 @@ window.onload = function () {
 	canv = document.getElementById("gc");
 	ctx = canv.getContext("2d");
 
-	var gui = new dat.GUI();
-	gui.add(vars, 'n_drops', 0, vars.max_n_drops);
-	gui.add(vars, 'background_color');
-	gui.add(vars, 'drop_color');
-	//gui.add(vars, 'drop_speed', 0, 50);
-	//gui.add(vars, 'drop_speed_diff', 0, 25);
-	//gui.add(vars, 'drop_length', 0, 20);
-	//gui.add(vars, 'drop_length_diff', 0, 10);
-	//gui.add(vars, 'lightning_probability', 0, 200);
-	//gui.add(vars, 'lightning_total_frames', 0, 10);
-	gui.add(vars, 'lightning_color');
+	loadControls();
 
 	for (var i = 0; i < vars.max_n_drops; ++i) {
 		drops[i] = createDrop(canv.width, canv.height);
@@ -165,8 +178,43 @@ window.onload = function () {
 	setInterval(loop, 1000/30);
 }
 
-function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+function loadControls () {
+	var gui = new dat.GUI();
+
+	var general_controls = gui.addFolder("General");
+	general_controls.add(vars, 'background_color');
+	general_controls.add(vars, 'gravity', vars.min_gravity, vars.max_gravity);
+
+	var drop_controls = gui.addFolder("Drops");
+	drop_controls.add(vars, 'n_drops', 0, vars.max_n_drops);
+	drop_controls.add(vars, 'drop_color');
+	//gui.add(vars, 'drop_length', 0, 20);
+	//gui.add(vars, 'drop_length_diff', 0, 10);
+
+	var wind_controls = gui.addFolder("Wind");
+	wind_controls.add(vars, 'automatic_wind');
+	wind_controls.add(vars, 'wind_probability', 0, 100);
+	wind_controls.add(vars, 'wind_max_speed', 0, 50);
+	wind_controls.add(vars, 'wind_min_speed', 0, 50);
+	wind_controls.add(vars, 'wind_speed', 0, 50);
+	wind_controls.add(vars, 'wind_force', -50, 50).listen();;
+
+	var lightning_controls = gui.addFolder("Lightning");
+	lightning_controls.add(vars, 'automatic_lightning');
+	lightning_controls.add(vars, 'light_probability', 0, 100);
+	lightning_controls.add(vars, 'light_color');
+	lightning_controls.add(vars, 'light_min_frames', 0, 100);
+	lightning_controls.add(vars, 'light_max_frames', 0, 100);
+
+	general_controls.open();
+}
+
+function random (min, max, round) {
+  	return Math.random() * (max - min + 1) + min;
+}
+
+function random_round (min, max, round) {
+  	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function module (x, y) {
