@@ -186,11 +186,11 @@ function loadControls () {
 	var gui = new dat.GUI();
 
 	var general_controls = gui.addFolder("General");
-	general_controls.add(vars, 'background_color');
+	general_controls.addColor(vars, 'background_color');
 	general_controls.add(vars, 'gravity', vars.min_gravity, vars.max_gravity);
 
 	var drop_controls = gui.addFolder("Drops");
-	drop_controls.add(vars, 'drop_color');
+	drop_controls.addColor(vars, 'drop_color');
 	drop_controls.add(vars, 'n_drops', 0, vars.max_n_drops);
 	drop_controls.add(vars, 'drop_min_weight', 0, 20);
 	drop_controls.add(vars, 'drop_max_weight', 0, 20);
@@ -208,7 +208,7 @@ function loadControls () {
 	var lightning_controls = gui.addFolder("Lightning");
 	lightning_controls.add(vars, 'automatic_lightning');
 	lightning_controls.add(vars, 'light_probability', 0, 100);
-	lightning_controls.add(vars, 'light_color');
+	lightning_controls.addColor(vars, 'light_color');
 	lightning_controls.add(vars, 'light_min_frames', 0, 50);
 	lightning_controls.add(vars, 'light_max_frames', 0, 50);
 	lightning_controls.add(vars, 'light_frames', 0, 100).listen();
