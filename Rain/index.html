@@ -48,8 +48,9 @@ function createDrop (w, h) {
 			this.y += this.yv;
 			
 			if (this.y > h + this.length || this.x > w + margin || this.x < -margin) {
+				this.yv = random(vars.drop_speed, vars.drop_speed + vars.drop_speed_diff),
 				this.x = random(-margin, w + margin);
-				this.y = 0;
+				this.y = 0 - this.yv;
 				this.px = this.x;
 				this.py = this.y;
 			}
