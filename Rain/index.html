@@ -15,6 +15,8 @@ var vars = {
 	drop_color: "#79aeff",
 	drop_length: 9,
 	drop_length_diff: 2,
+	drop_min_weight: 6,
+	drop_max_weight: 10,
 
 	// Lightning
 	automatic_lightning: true,
@@ -48,7 +50,7 @@ function createDrop (w, h) {
 	return {
 		x: random(-margin, w + margin),
 		y: Math.random() * h,
-		weight: random_round(6, 10),
+		weight: random_round(vars.drop_min_weight, vars.drop_max_weight),
 		px: this.x,
 		py: this.y,
 		length: random_round(vars.drop_length, vars.drop_length_diff),
@@ -82,6 +84,7 @@ function createDrop (w, h) {
 			ctx.stroke();
 		},
 		reset: function () {
+			this.weight = random_round(vars.drop_min_weight, vars.drop_max_weight);
 			this.drop_speed = this.weight * vars.gravity * 0.1;
 			this.x = random_round(-margin, w + margin);
 			this.y = random_round(-this.drop_speed, 0) - this.drop_speed;
@@ -189,8 +192,10 @@ function loadControls () {
 	var drop_controls = gui.addFolder("Drops");
 	drop_controls.add(vars, 'drop_color');
 	drop_controls.add(vars, 'n_drops', 0, vars.max_n_drops);
-	//gui.add(vars, 'drop_length', 0, 20);
-	//gui.add(vars, 'drop_length_diff', 0, 10);
+	drop_controls.add(vars, 'drop_min_weight', 0, 20);
+	drop_controls.add(vars, 'drop_max_weight', 0, 20);
+	//drop_controls.add(vars, 'drop_length', 0, 20);
+	//drop_controls.add(vars, 'drop_length_diff', 0, 10);
 
 	var wind_controls = gui.addFolder("Wind");
 	wind_controls.add(vars, 'automatic_wind');
