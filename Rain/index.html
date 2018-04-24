@@ -3,7 +3,7 @@
 <script>
 
 var vars = {
-	n_drops: 500,
+	n_drops: 800,
 	max_n_drops: 1500,
 	background_color: "#002040",
 	drop_color: "#79aeff",
@@ -12,11 +12,14 @@ var vars = {
 	drop_length: 9,
 	drop_length_diff: 2,
 	lightning_probability: 100,
-	lightning_total_frames: 3,
+	lightning_total_frames: 5,
 	lightning_color: "#ffffd2",
 	wind_probability: 80,
 	wind_total_frames: 15,
 	wind_force: 0,
+	wind_max_speed: 20,
+	wind_min_speed: 4,
+	wind_speed: 10,
 }
 
 var drops = [];
@@ -27,7 +30,7 @@ var wind_frames = 0;
 var wind_sin = 0;
 var wind_dir = 0;
 
-var margin = 200;
+var margin = 600;
 
 function createDrop (w, h) {
 	return {
@@ -38,7 +41,6 @@ function createDrop (w, h) {
 		yv: random(vars.drop_speed, vars.drop_speed + vars.drop_speed_diff),
 		length: random(vars.drop_length, vars.drop_length_diff),
 		update: function () {
-			if (this.x < -200) console.log(this.x);
 			this.px = this.x;
 			this.py = this.y;
 
@@ -79,8 +81,8 @@ function loop () {
 function update () {
 	if (vars.wind_probability > 0 && wind) {
 		wind_sin += (Math.PI / vars.wind_total_frames);
-		if (wind_dir === 0) vars.wind_force -= Math.sin(wind_sin);
-		if (wind_dir === 1) vars.wind_force += Math.sin(wind_sin);
+		if (wind_dir === 0) vars.wind_force = -(Math.sin(wind_sin) * vars.wind_speed);
+		if (wind_dir === 1) vars.wind_force = Math.sin(wind_sin) * vars.wind_speed;
 		++wind_frames;
 		if (wind_frames === vars.wind_total_frames) {
 			wind_sin = 0;
@@ -92,9 +94,10 @@ function update () {
 	else if (vars.wind_probability > 0) {
 		var wind_rand = random(1, vars.wind_probability);
 		if (wind_rand === vars.wind_probability) {
-			wind_dir = random(0,1);
-			console.log(wind_dir);
 			wind = true;
+			wind_dir = random(0,1);
+			vars.wind_speed = random(vars.wind_min_speed, vars.wind_max_speed);
+			vars.wind_total_frames = vars.wind_speed * 3;
 		}
 	}
 
@@ -108,7 +111,10 @@ function update () {
 	}
 	else if (vars.lightning_probability > 0) {
 		var lightning_rand = random(1, vars.lightning_probability);
-		if (lightning_rand === vars.lightning_probability) lightning = true;
+		if (lightning_rand === vars.lightning_probability) {
+			lightning = true;
+			vars.lightning_total_frames = random(3,5);
+		}
 	}
 
 	for (var i = 0; i < vars.n_drops; ++i) {
