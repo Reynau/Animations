@@ -186,16 +186,16 @@ function loadControls () {
 	general_controls.add(vars, 'gravity', vars.min_gravity, vars.max_gravity);
 
 	var drop_controls = gui.addFolder("Drops");
-	drop_controls.add(vars, 'n_drops', 0, vars.max_n_drops);
 	drop_controls.add(vars, 'drop_color');
+	drop_controls.add(vars, 'n_drops', 0, vars.max_n_drops);
 	//gui.add(vars, 'drop_length', 0, 20);
 	//gui.add(vars, 'drop_length_diff', 0, 10);
 
 	var wind_controls = gui.addFolder("Wind");
 	wind_controls.add(vars, 'automatic_wind');
 	wind_controls.add(vars, 'wind_probability', 0, 100);
-	wind_controls.add(vars, 'wind_max_speed', 0, 50);
 	wind_controls.add(vars, 'wind_min_speed', 0, 50);
+	wind_controls.add(vars, 'wind_max_speed', 0, 50);
 	wind_controls.add(vars, 'wind_speed', 0, 50);
 	wind_controls.add(vars, 'wind_force', -50, 50).listen();;
 
