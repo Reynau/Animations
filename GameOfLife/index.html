@@ -1,0 +1,118 @@
+<canvas id="gc" width="400" height="400"></canvas>
+<script type="text/javascript" src="dat.gui.min.js"></script>
+<script>
+
+var vars = {
+	board_size: 100,
+	square_size: 5,
+	initial_elems: 5000,
+}
+
+var board = [];
+var new_board = [];
+
+function loop () {
+	update();
+	draw();
+}
+
+function update () {
+	for (var i = 0; i < vars.board_size; ++i) {
+		for (var j = 0; j < vars.board_size; ++j) {
+			var neighbours = count_neighbours(i,j);
+
+			if (board[i][j] && (neighbours === 2 || neighbours === 3)) new_board[i][j] = 1;
+			else if (!board[i][j] && neighbours === 3) new_board[i][j] = 1;
+			else new_board[i][j] = 0;
+
+			if (i > 8 && i < 12 && j > 9 && j < 13) console.log(i,j,neighbours, board[i][j], new_board[i][j]);
+		}
+	}
+
+	for (var i = 0; i < vars.board_size; ++i) {
+		for (var j = 0; j < vars.board_size; ++j) {
+			board[i][j] = new_board[i][j];
+		}
+	}
+}
+
+function draw () {
+	ctx.fillStyle = "white";
+	ctx.fillRect(0, 0, canv.width, canv.height);
+
+	for (var i = 0; i < vars.board_size; ++i) {
+		for (var j = 0; j < vars.board_size; ++j) {
+			if (board[i][j]) {
+				ctx.fillStyle = "black";
+				ctx.fillRect(i * vars.square_size, j * vars.square_size, vars.square_size, vars.square_size);
+			}
+		}
+	}
+}
+
+function count_neighbours (i, j) {
+	var neighbours = 0;
+	for (var x = -1; x < 2; ++x) {
+		for (var y = -1; y < 2; ++y) {
+			var a = i+x;
+			var b = j+y;
+			if (a < 0) a = vars.board_size - 1;
+			if (a === vars.board_size) a = 0;
+			if (b < 0) b = vars.board_size - 1;
+			if (b === vars.board_size) b = 0;
+
+			neighbours += board[a][b];
+		}
+	}
+
+	return neighbours - board[i][j];
+}
+
+window.onload = function () {
+	canv = document.getElementById("gc");
+	ctx = canv.getContext("2d");
+
+	var w = canv.width;
+	var h = canv.height;
+
+	vars.square_size = canv.width / vars.board_size;
+
+	for (var i = 0; i < vars.board_size; ++i) {
+		board[i] = [];
+		new_board[i] = [];
+		for (var j = 0; j < vars.board_size; ++j) {
+			board[i][j] = 0;
+			new_board[i][j] = 0;
+		}
+	}
+
+	for (var i = 0; i < vars.initial_elems; ++i) {
+		var x = random_round(0, vars.board_size-1);
+		var y = random_round(0, vars.board_size-1);
+		board[x][y] = 1;
+	}
+
+	setInterval(loop, 1000/15);
+}
+
+function random (min, max, round) {
+  	return Math.random() * (max - min + 1) + min;
+}
+
+function random_round (min, max, round) {
+  	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function module (x, y) {
+	return Math.sqrt(square(x) + square(y));
+}
+
+function distance (x1, y1, x2, y2) {
+	return Math.sqrt(square(x1 - x2) + square(y1 - y2));
+}
+
+function square (x) {
+	return x*x;
+}
+
+</script>
