@@ -42,6 +42,7 @@ function loop () {
 }
 
 function update () {
+	// Save childs
 	var child_nodes = [];
 	for (var i = 0; i < parent_nodes.length; ++i) {
 		var parent = parent_nodes[i];
@@ -50,15 +51,18 @@ function update () {
 		}
 	}
 
+	// Update array with the childs
 	parent_nodes = [];
 	for (var i = 0; i < child_nodes.length; ++i) {
 		parent_nodes.push(child_nodes[i]);
 	}
 
+	// Generate new childs
 	for (var i = 0; i < parent_nodes.length; ++i) {
 		if (parent_nodes[i].depth < vars.max_depth)
 			parent_nodes[i].childs = create_child_nodes(parent_nodes[i])
-	}}
+	}
+}
 
 function draw () {
 	for (var i = 0; i < parent_nodes.length; ++i) {
@@ -92,6 +96,7 @@ window.onload = function () {
 	node.childs.push(child);
 	parent_nodes.push(node);
 
+	// Initial line
 	draw_line(node.x, node.y, child.x, child.y, vars.max_depth + 1)
 
 	setInterval(loop, 1000/15);
