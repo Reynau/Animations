@@ -1,0 +1,242 @@
+<canvas id="gc" width="800" height="800"></canvas>
+<script type="text/javascript" src="dat.gui.min.js"></script>
+<script>
+
+var vars = {
+	// General
+	background_color: "#002040",
+	max_gravity: 100,
+	min_gravity: 10,
+	gravity: 20,
+
+	// Drops
+	n_drops: 800,
+	max_n_drops: 5000,
+	drop_color: "#79aeff",
+	drop_length: 9,
+	drop_length_diff: 2,
+	drop_min_weight: 6,
+	drop_max_weight: 10,
+
+	// Lightning
+	automatic_lightning: true,
+	light_probability: 1,
+	light_max_frames: 5,
+	light_min_frames: 3,
+	light_frames: 5,
+	light_color: "#ffffd2",
+
+	// Wind
+	automatic_wind: true,
+	wind_probability: 5,
+	wind_total_frames: 15,
+	wind_force: 0,
+	wind_max_speed: 20,
+	wind_min_speed: 4,
+	wind_speed: 10,
+}
+
+var drops = [];
+var lightning = false;
+var lightning_frames = 0;
+var wind = false;
+var wind_frames = 0;
+var wind_sin = 0;
+var wind_dir = 0;
+
+var margin = 600;
+
+function createDrop (w, h) {
+	return {
+		x: random(-margin, w + margin),
+		y: Math.random() * h,
+		weight: random_round(vars.drop_min_weight, vars.drop_max_weight),
+		px: this.x,
+		py: this.y,
+		length: random_round(vars.drop_length, vars.drop_length_diff),
+		update: function () {
+			this.px = this.x;
+			this.py = this.y;
+
+			this.drop_speed = this.weight * vars.gravity * 0.1;
+
+			this.x += vars.wind_force;
+			this.y += this.drop_speed
+			
+			if (this.y > h + this.length || this.x > w + margin || this.x < -margin) {
+				this.reset();
+			}
+		},
+		draw: function () {
+			var dist = distance(this.px, this.py, this.x, this.y);
+			var x = this.x - this.px;
+			var y = this.y - this.py;
+
+			var ux = x / module(x,y);
+			var uy = y / module(x,y);
+
+			// Draw drops
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y);
+			ctx.lineTo(this.x + ux * this.length * 1.1, this.y + uy * this.length * 1.1);
+			ctx.lineWidth = 2;
+			ctx.strokeStyle = vars.drop_color;
+			ctx.stroke();
+		},
+		reset: function () {
+			this.weight = random_round(vars.drop_min_weight, vars.drop_max_weight);
+			this.drop_speed = this.weight * vars.gravity * 0.1;
+			this.x = random_round(-margin, w + margin);
+			this.y = random_round(-this.drop_speed, 0) - this.drop_speed;
+			this.px = this.x;
+			this.py = this.y;
+		}
+	}
+}
+
+function loop () {
+	update();
+	draw();
+}
+
+function update () {
+	if (vars.automatic_wind) update_wind();
+	if (vars.automatic_lightning) update_lightning();
+
+	for (var i = 0; i < vars.n_drops; ++i) {
+		drops[i].update();
+	}
+}
+
+function update_wind () {
+	if (vars.wind_probability > 0 && wind) {
+		wind_sin += (Math.PI / vars.wind_total_frames);
+		if (wind_dir === 0) vars.wind_force = -(Math.sin(wind_sin) * vars.wind_speed);
+		if (wind_dir === 1) vars.wind_force = Math.sin(wind_sin) * vars.wind_speed;
+		++wind_frames;
+		if (wind_frames >= vars.wind_total_frames) {
+			wind_sin = 0;
+			vars.wind_force = 0;
+			wind_frames = 0;
+			wind = false;
+		}
+	}
+	else if (vars.wind_probability > 0) {
+		var wind_rand = random(0, 100);
+		if (wind_rand <= vars.wind_probability) {
+			wind = true;
+			wind_dir = random_round(0,1);
+			vars.wind_speed = random_round(vars.wind_min_speed, vars.wind_max_speed);
+			vars.wind_total_frames = vars.wind_speed * 5;
+		}
+	}
+}
+
+function update_lightning () {
+	if (vars.light_probability > 0 && lightning) {
+		++lightning_frames;
+
+		if (lightning_frames >= vars.light_max_frames) {
+			lightning_frames = 0;
+			lightning = false;
+		}
+	}
+	else if (vars.light_probability > 0) {
+		var lightning_rand = random(0, 100);
+		if (lightning_rand <= vars.light_probability) {
+			lightning = true;
+			vars.light_frames = random_round(vars.light_min_frames, vars.light_max_frames);
+		}
+	}
+}
+
+function draw () {
+	drawBackground();
+
+	for (var i = 0; i < vars.n_drops; ++i) {
+		drops[i].draw();
+	}
+}
+
+function drawBackground () {
+	var color;
+
+	if (lightning) color = vars.light_color;
+	else color = vars.background_color;
+
+	ctx.fillStyle = color;
+	ctx.fillRect(0, 0, canv.width, canv.height);
+}
+
+
+window.onload = function () {
+	canv = document.getElementById("gc");
+	ctx = canv.getContext("2d");
+
+	loadControls();
+
+	for (var i = 0; i < vars.max_n_drops; ++i) {
+		drops[i] = createDrop(canv.width, canv.height);
+	}
+
+	setInterval(loop, 1000/30);
+}
+
+function loadControls () {
+	var gui = new dat.GUI();
+
+	var general_controls = gui.addFolder("General");
+	general_controls.addColor(vars, 'background_color');
+	general_controls.add(vars, 'gravity', vars.min_gravity, vars.max_gravity);
+
+	var drop_controls = gui.addFolder("Drops");
+	drop_controls.addColor(vars, 'drop_color');
+	drop_controls.add(vars, 'n_drops', 0, vars.max_n_drops);
+	drop_controls.add(vars, 'drop_min_weight', 0, 20);
+	drop_controls.add(vars, 'drop_max_weight', 0, 20);
+	//drop_controls.add(vars, 'drop_length', 0, 20);
+	//drop_controls.add(vars, 'drop_length_diff', 0, 10);
+
+	var wind_controls = gui.addFolder("Wind");
+	wind_controls.add(vars, 'automatic_wind');
+	wind_controls.add(vars, 'wind_probability', 0, 100);
+	wind_controls.add(vars, 'wind_min_speed', 0, 50);
+	wind_controls.add(vars, 'wind_max_speed', 0, 50);
+	wind_controls.add(vars, 'wind_speed', 0, 50).listen();
+	wind_controls.add(vars, 'wind_force', -50, 50).listen();;
+
+	var lightning_controls = gui.addFolder("Lightning");
+	lightning_controls.add(vars, 'automatic_lightning');
+	lightning_controls.add(vars, 'light_probability', 0, 100);
+	lightning_controls.addColor(vars, 'light_color');
+	lightning_controls.add(vars, 'light_min_frames', 0, 50);
+	lightning_controls.add(vars, 'light_max_frames', 0, 50);
+	lightning_controls.add(vars, 'light_frames', 0, 100).listen();
+
+	general_controls.open();
+	drop_controls.open();
+	wind_controls.open();
+	lightning_controls.open();
+}
+
+function random (min, max, round) {
+  	return Math.random() * (max - min + 1) + min;
+}
+
+function random_round (min, max, round) {
+  	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function module (x, y) {
+	return Math.sqrt(square(x) + square(y));
+}
+
+function distance (x1, y1, x2, y2) {
+	return Math.sqrt(square(x1 - x2) + square(y1 - y2));
+}
+
+function square (x) {
+	return x*x;
+}
+
+</script>
