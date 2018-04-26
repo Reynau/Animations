@@ -2,26 +2,27 @@
 <script>
 
 var vars = {
-	divide_prob: 10,
+	divide_prob: 20,
 	max_width: 6,
 	max_depth: 80,
-	min_length: 5,
+	min_length: 2,
 	max_length: 25,
 }
 
 var nodes = [];
 
-function create_node(x, y, depth, level) {
+function create_node(x, y, depth, level, dir) {
 	return {
 		x: x,
 		y: y,
 		depth: depth,
 		level: level,
+		dir: dir,
 		childs: [],
 	}
 }
 
-function generate_child(ox, oy, depth, level) {
+function generate_random_child(ox, oy, depth, level) {
 	var angle = Math.PI / random(3, 5);
 	var dir = random_round(0,1) ? -1 : 1;
 	var length = random(vars.min_length, vars.max_length);
@@ -29,7 +30,17 @@ function generate_child(ox, oy, depth, level) {
 	var x = ox + Math.cos(angle) * length * dir;
 	var y = oy + Math.sin(angle) * length;
 
-	return create_node(x, y, depth, level);
+	return create_node(x, y, depth, level, dir);
+}
+
+function generate_child(ox, oy, depth, level, dir) {
+	var angle = Math.PI / random(1, 8);
+	var length = random(vars.min_length, vars.max_length);
+
+	var x = ox + Math.cos(angle) * length * dir;
+	var y = oy + Math.sin(angle) * length;
+
+	return create_node(x, y, depth, level, dir);
 }
 
 function loop () {
@@ -59,10 +70,28 @@ function update () {
 
 		if (node.depth == vars.max_depth) continue;
 
-		if (random_round(0,100) <= 100 - node.level * 15) 
-			node.childs.push(generate_child(node.x, node.y, node.depth+1, node.level));
+		if (node.level === 0) {
+			node.childs.push(generate_random_child(node.x, node.y, node.depth+1, node.level));
+
+			if (random_round(0,100) <= vars.divide_prob) 
+				node.childs.push(generate_child(node.x, node.y, node.depth+1, node.level+1, -node.dir));
+		}
+		else {
+			if (random_round(0,100) <= 100 - node.level * 15) {
+				node.childs.push(generate_child(node.x, node.y, node.depth+1, node.level, node.dir));
+
+				if (random_round(0,100) <= vars.divide_prob) 
+					node.childs.push(generate_child(node.x, node.y, node.depth+1, node.level+1, -node.dir));
+			}
+		}
+/*
+		var principal_node;
+		if (random_round(0,100) <= 100 - node.level * 15) {
+			principal_node = generate_random_child(node.x, node.y, node.depth+1, node.level);
+			node.childs.push(principal_node);
+		}
 		if (random_round(0,100) <= vars.divide_prob) 
-			node.childs.push(generate_child(node.x, node.y, node.depth+1, node.level+1));
+			node.childs.push(generate_child(node.x, node.y, node.depth+1, node.level+1, principal_node.dir));*/
 	}	
 }
 
@@ -73,6 +102,7 @@ function draw () {
 			var child = node.childs[c];
 			var w = vars.max_width - child.level * 3;
 			if (w < 1) w = 1;
+
 			draw_line(node.x, node.y, child.x, child.y, w);
 		}
 	}
@@ -102,8 +132,8 @@ window.onload = function () {
 	for (var i = 0; i < num_thunderbolts; ++i) {
 		var zone_init = i * thundebolt_zone;
 		var zone_end = zone_init + thundebolt_zone;
-		start_node = create_node(random(zone_init,zone_end), 100, 0, 0);
-		child_node = generate_child(start_node.x, start_node.y, start_node.depth, start_node.level);
+		start_node = create_node(random(zone_init,zone_end), 100, 0, 0, 0);
+		child_node = generate_random_child(start_node.x, start_node.y, start_node.depth, start_node.level);
 		start_node.childs.push(child_node);
 		nodes.push(start_node);
 		draw_line(start_node.x, start_node.y, child_node.x, child_node.y, vars.max_width);
