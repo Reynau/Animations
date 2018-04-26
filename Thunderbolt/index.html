@@ -3,7 +3,7 @@
 
 var vars = {
 	divide_prob: 10,
-	max_width: 10,
+	max_width: 6,
 	max_depth: 80,
 	min_length: 5,
 	max_length: 25,
@@ -72,7 +72,7 @@ function draw () {
 		for (var c = 0; c < node.childs.length; ++c) {
 			var child = node.childs[c];
 			var w = vars.max_width - child.level * 3;
-			if (w < 0) w = 1;
+			if (w < 1) w = 1;
 			draw_line(node.x, node.y, child.x, child.y, w);
 		}
 	}
