@@ -2,36 +2,38 @@
 <script>
 
 var vars = {
-	max_depth: 5,
+	max_depth: 10,
 	tree_color: '#000000',
 	initial_length: 100,
 }
 
 var parent_nodes = [];
 
-function create_node (x, y, angle, length) {
+function create_node (x, y, angle, length, depth) {
 	return {
 		x: x,
 		y: y,
 		angle: angle,
+		depth: depth,
 		length: length,
 		childs: [],
 	}
 }
 
 function create_child_nodes (parent_node) {
+	var d = parent_node.depth + 1;
 	// Right child
-	var ra = parent_node.angle + Math.PI / 3;
-	var rl = parent_node.length / 2;
+	var ra = parent_node.angle + Math.PI / random(3,10);
+	var rl = parent_node.length * 0.8;
 	var rx = parent_node.x + Math.cos(ra) * rl;
-	var ry = parent_node.y + Math.sin(ra) * rl;
+	var ry = parent_node.y - Math.sin(ra) * rl;
 	// Left child
-	var la = parent_node.angle + Math.PI / 3;
-	var ll = parent_node.length / 2;
+	var la = parent_node.angle - Math.PI / random(3,10);
+	var ll = parent_node.length * 0.8;
 	var lx = parent_node.x + Math.cos(la) * ll;
-	var ly = parent_node.y + Math.sin(la) * ll;
+	var ly = parent_node.y - Math.sin(la) * ll;
 
-	return [create_node(rx,ry,ra,rl), create_node(lx,ly,la,ll)];
+	return [create_node(rx,ry,ra,rl,d), create_node(lx,ly,la,ll,d)];
 }
 
 function loop () {
@@ -43,8 +45,9 @@ function update () {
 	var child_nodes = [];
 	for (var i = 0; i < parent_nodes.length; ++i) {
 		var parent = parent_nodes[i];
-		child_nodes.push(parent.childs[0]);
-		child_nodes.push(parent.childs[1]);
+		for (var c = 0; c < parent.childs.length; ++c) {
+			child_nodes.push(parent.childs[c]);
+		}
 	}
 
 	parent_nodes = [];
@@ -53,24 +56,26 @@ function update () {
 	}
 
 	for (var i = 0; i < parent_nodes.length; ++i) {
-		parent_nodes[i].childs = create_child_nodes(parent_nodes[i])
-	}
-}
+		if (parent_nodes[i].depth < vars.max_depth)
+			parent_nodes[i].childs = create_child_nodes(parent_nodes[i])
+	}}
 
 function draw () {
 	for (var i = 0; i < parent_nodes.length; ++i) {
 		var parent = parent_nodes[i];
-		var rchild = parent.childs[0];
-		var lchild = parent.childs[1];
-		draw_line(parent.x, parent.y, rchild.x, rchild.y);
-		draw_line(parent.x, parent.y, lchild.x, lchild.y);
+		for (var c = 0; c < parent.childs.length; ++c) {
+			var child = parent.childs[c];
+			var w = vars.max_depth - child.depth;
+			draw_line(parent.x, parent.y, child.x, child.y, w + 1);
+		}
 	}
 }
 
-function draw_line (ox, oy, dx, dy) {
+function draw_line (ox, oy, dx, dy, w) {
 	ctx.beginPath();
 	ctx.moveTo(ox, oy);
 	ctx.lineTo(dx, dy);
+	ctx.lineWidth = w;
 	ctx.strokeStyle = vars.tree_color;
 	ctx.stroke();
 }
@@ -82,8 +87,12 @@ window.onload = function () {
 	ctx.fillStyle = "white";
 	ctx.fillRect(0, 0, canv.width, canv.height);
 
-	var node = create_node(150, 150, Math.PI/2, vars.initial_length);
+	var node = create_node(400, 700, Math.PI/2, vars.initial_length, 0);
+	var child = create_node(node.x, node.y - node.length, node.angle, node.length, 0);
+	node.childs.push(child);
 	parent_nodes.push(node);
+
+	draw_line(node.x, node.y, child.x, child.y, vars.max_depth + 1)
 
 	setInterval(loop, 1000/15);
 }
