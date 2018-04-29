@@ -1,0 +1,64 @@
+<canvas id="gc" width="800" height="800"></canvas>
+<script type="text/javascript" src="dat.gui.min.js"></script>
+<script type="text/javascript" src="thunderbolt.js"></script>
+<script type="text/javascript" src="wind.js"></script>
+<script type="text/javascript" src="rain.js"></script>
+<script>
+
+var vars = {
+
+}
+
+function loop () {
+	update();
+	draw();
+}
+
+function update () {
+	tb.update();
+	wind.update();
+	rain.update();
+}
+
+function draw () {
+	tb.draw();
+	rain.draw();
+}
+
+window.onload = function () {
+	canv = document.getElementById("gc");
+	ctx = canv.getContext("2d");
+
+	// User interface
+	gui = new dat.GUI();
+	general_controls = gui.addFolder("General");
+	general_controls.open();
+
+	tb = new Thunderbolt();
+	wind = new Wind();
+	rain = new Rain();
+
+	setInterval(loop, 1000/30);
+}
+
+function random (min, max, round) {
+  	return Math.random() * (max - min + 1) + min;
+}
+
+function random_round (min, max, round) {
+  	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function module (x, y) {
+	return Math.sqrt(square(x) + square(y));
+}
+
+function distance (x1, y1, x2, y2) {
+	return Math.sqrt(square(x1 - x2) + square(y1 - y2));
+}
+
+function square (x) {
+	return x*x;
+}
+
+</script>
