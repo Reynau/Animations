@@ -27,6 +27,7 @@ function draw () {
 	for (var i = 0; i < trees.length; ++i) {
 		trees[i].draw();
 	}
+
 	rain.draw();
 }
 
@@ -39,11 +40,13 @@ window.onload = function () {
 	general_controls = gui.addFolder("General");
 	general_controls.open();
 
-	var x_offset = canv.width / vars.num_trees;
 	trees = [];
+	var x_offset = canv.width / vars.num_trees;
 	for (var i = 0; i < vars.num_trees; ++i) {
-		trees.push(new Tree());
-		trees[i].generate(random_round(50+i*x_offset,i*x_offset+x_offset-50), random_round(800,900), random_round(50,100));
+		var x = random_round(50+i*x_offset,i*x_offset+x_offset-50);
+		var y = random_round(800,900);
+		var size = random_round(50,100);
+		trees.push(new Tree(x, y, size));
 	}
 
 	tb = new Thunderbolt();

@@ -5,15 +5,15 @@ var tree_vars = {
 	initial_length: 100,
 }
 
-function Tree () {
+function Tree (x, y, size) {
 	var tree;
 
 	var parent_nodes = [];
 
-	var node = create_node(400, 700, Math.PI/2, tree_vars.initial_length, 0);
-	var child = create_node(node.x, node.y - node.length, node.angle, node.length, 0);
-	node.childs.push(child);
-	parent_nodes.push(node);
+	tree = create_node(x, y, Math.PI/2, size, 0);
+	var child = create_node(tree.x, tree.y - tree.length, tree.angle, tree.length, 0);
+	child.childs = recursive_generation(child);
+	tree.childs.push(child);
 
 	function create_node (x, y, angle, length, depth) {
 		return {
@@ -40,13 +40,6 @@ function Tree () {
 		var ly = parent_node.y - Math.sin(la) * ll;
 
 		return [create_node(rx,ry,ra,rl,d), create_node(lx,ly,la,ll,d)];
-	}
-
-	function generate (x, y, size) {
-		tree = create_node(x, y, Math.PI/2, size, 0);
-		var child = create_node(tree.x, tree.y - tree.length, tree.angle, tree.length, 0);
-		child.childs = recursive_generation(child);
-		tree.childs.push(child);
 	}
 
 	function recursive_generation (parent) {
