@@ -40,7 +40,7 @@ function Tree (x, y, size) {
 		var ly = parent_node.y - Math.sin(la) * ll;
 
 		return [create_node(rx,ry,ra,rl,d), create_node(lx,ly,la,ll,d)];
-	}
+	} 
 
 	function recursive_generation (parent) {
 		if (parent.depth >= tree_vars.max_depth) return [];
@@ -75,7 +75,6 @@ function Tree (x, y, size) {
 	}
 
 	return {
-		generate: generate,
 		draw: draw,
 	}
 }
