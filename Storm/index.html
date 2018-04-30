@@ -3,10 +3,11 @@
 <script type="text/javascript" src="thunderbolt.js"></script>
 <script type="text/javascript" src="wind.js"></script>
 <script type="text/javascript" src="rain.js"></script>
+<script type="text/javascript" src="tree.js"></script>
 <script>
 
 var vars = {
-
+	num_trees: 3,
 }
 
 function loop () {
@@ -22,6 +23,10 @@ function update () {
 
 function draw () {
 	tb.draw();
+
+	for (var i = 0; i < trees.length; ++i) {
+		trees[i].draw();
+	}
 	rain.draw();
 }
 
@@ -33,6 +38,13 @@ window.onload = function () {
 	gui = new dat.GUI();
 	general_controls = gui.addFolder("General");
 	general_controls.open();
+
+	var x_offset = canv.width / vars.num_trees;
+	trees = [];
+	for (var i = 0; i < vars.num_trees; ++i) {
+		trees.push(new Tree());
+		trees[i].generate(random_round(50+i*x_offset,i*x_offset+x_offset-50), random_round(800,900), random_round(50,100));
+	}
 
 	tb = new Thunderbolt();
 	wind = new Wind();

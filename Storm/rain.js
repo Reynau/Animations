@@ -8,7 +8,7 @@ var rain_vars = {
 	// Drops
 	n_drops: 800,
 	max_n_drops: 5000,
-	drop_color: "#79aeff",
+	drop_color: "#132b50",
 	drop_length: 9,
 	drop_length_diff: 2,
 	drop_min_weight: 6,
