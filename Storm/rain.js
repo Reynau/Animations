@@ -1,9 +1,9 @@
 
 var rain_vars = {
 	// General
-	max_gravity: 100,
-	min_gravity: 10,
-	gravity: 20,
+	max_gravity: 10,
+	min_gravity: 1,
+	gravity: 5,
 
 	// Drops
 	n_drops: 800,
@@ -12,7 +12,7 @@ var rain_vars = {
 	drop_length: 9,
 	drop_length_diff: 2,
 	drop_min_weight: 6,
-	drop_max_weight: 10,
+	drop_max_weight: 14,
 }
 
 function Rain () {

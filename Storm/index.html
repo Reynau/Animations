@@ -10,9 +10,32 @@ var vars = {
 	num_trees: 3,
 }
 
+var timestep = 1000 / 60
+var lastFrame = Date.now()
+var delta = 0
+
+// Render vars
+var renderInQueue = false;
+
+
+function updateDelta () {
+	let timestamp = Date.now()
+	delta = timestamp - lastFrame
+	lastFrame = timestamp
+}
+
 function loop () {
-	update();
-	draw();
+	updateDelta()
+	while (delta >= timestep) {
+		update()
+		delta -= timestep
+	}
+
+	// Rendering goes independent of logic. Logic always run.
+	if (!renderInQueue) {
+		window.requestAnimationFrame(draw)
+		renderInQueue = true
+	}
 }
 
 function update () {
@@ -22,6 +45,8 @@ function update () {
 }
 
 function draw () {
+	renderInQueue = false
+
 	tb.draw();
 
 	for (var i = 0; i < trees.length; ++i) {
@@ -56,11 +81,11 @@ window.onload = function () {
 	setInterval(loop, 1000/30);
 }
 
-function random (min, max, round) {
+function random (min, max) {
   	return Math.random() * (max - min + 1) + min;
 }
 
-function random_round (min, max, round) {
+function random_round (min, max) {
   	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
