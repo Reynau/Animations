@@ -11,13 +11,26 @@ var toRadian = Math.PI / 180;
 
 setInterval(loop, INTERVAL_SEC);
 
-var sakura =  new Sakura(400, 800, 90, 180, 5, 10);
+var trees = [];
+for (let i = 0; i < 1; ++i) {
+    trees.push(new Sakura(random(200, 600), 800, random(80, 100), random(200, 300), 5, 10));
+}
 
 function loop () {
-    sakura.update(step);
-    ctx.fillStyle = "#fff";
+    trees.forEach(t => t.update(step));
+
+
+    // Sky
+    ctx.fillStyle = "#ffa8a8";
     ctx.fillRect(0, 0, canv.width, canv.height);
-	sakura.draw()
+    // Sun
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(650, 100, 150, 0, 2 * Math.PI);
+    ctx.fill();
+
+
+	trees.forEach(t => t.draw());
     step += (Math.PI / 80) % Math.PI;
 }
 
