@@ -1,0 +1,26 @@
+<canvas id="gc" width="800" height="800"></canvas>
+<script type="text/javascript" src="Sakura.js"></script>
+<script>
+var FPS = 60;
+var INTERVAL_SEC = 1000 / FPS >> 0;
+
+canv = document.getElementById("gc");
+ctx = canv.getContext("2d");
+var step = 0.0;
+var toRadian = Math.PI / 180;
+
+setInterval(loop, INTERVAL_SEC);
+
+var sakura =  new Sakura(400, 800, 90, 180, 5, 10);
+
+function loop () {
+    sakura.update(step);
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canv.width, canv.height);
+	sakura.draw()
+    step += (Math.PI / 80) % Math.PI;
+}
+
+
+
+</script>
