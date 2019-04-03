@@ -28,7 +28,7 @@ class Branch {
         this.angle = angle;
         this.mod_angle = angle;
         this.length = length;
-        this.width = random_round(max_width, max_width/5*3);
+        this.width = random_round(max_width/5*3, max_width/5*2.5);
         this.depth = depth;
 
         this.nx = this.x + this.length * Math.cos(this.angle * toRadian);
@@ -68,6 +68,7 @@ class Branch {
     update (step) {
         if (!this.isRoot) {
             this.mod_angle = this.angle + step;
+            if (this.mod_angle > 180) this.mod_angle = 180;
             this.nx = this.x + this.length * Math.cos(this.mod_angle * toRadian);
             this.ny = this.y - this.length * Math.sin(this.mod_angle * toRadian);
         }
@@ -98,6 +99,7 @@ class Branch {
         ctx.strokeStyle = "#8D89A6";
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(this.nx, this.ny);
+        ctx.lineCap = 'round';
         ctx.stroke();
 
         ctx.beginPath();
@@ -105,11 +107,44 @@ class Branch {
         ctx.strokeStyle = "#BFABCB";
         ctx.moveTo(this.x + this.width/2, this.y);
         ctx.lineTo(this.nx + this.width/2, this.ny);
+        ctx.lineCap = 'round';
         ctx.stroke();
 
         for (let i = 0; i < this.childs.length; ++i) {
             this.childs[i].draw();
         }
+        /*
+        let y_dist = this.y - this.ny;
+        
+        let x_incr = (this.nx - this.x) / y_dist;
+        let ax = this.x;
+        let ay = this.y;
+
+        for (let i = this.y; i <= this.ny; ++i) {
+            ctx.beginPath();
+            ctx.lineWidth = this.width > 0 ? this.width : 1;
+            ctx.strokeStyle = "#8D89A6";
+            ctx.moveTo(ax, ay);
+            ctx.lineTo(ax + x_incr, ay + 1);
+            ctx.lineCap = 'round';
+            ctx.stroke();
+    
+            ctx.beginPath();
+            ctx.lineWidth = this.width > 0 ? this.width/3*2 : 1;
+            ctx.strokeStyle = "#BFABCB";
+            ctx.moveTo(ax + this.width/2, ay);
+            ctx.lineTo(ax + this.width/2 + x_incr, ay + 1);
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            ax += x_incr;
+            ay += 1;
+        }
+
+        for (let i = 0; i < this.childs.length; ++i) {
+            this.childs[i].draw();
+        }
+        */
     }
 }
 

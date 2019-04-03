@@ -14,7 +14,7 @@ setInterval(loop, INTERVAL_SEC);
 
 var trees = [];
 for (let i = 0; i < 1; ++i) {
-    trees.push(new Sakura(random(350, 500), 800, random(75, 95), random(270, 300), 5, 10));
+    trees.push(new Sakura(random(350, 500), 800, random(75, 95), random(270, 300), 5, 20));
 }
 
 var petals = [];
@@ -38,9 +38,16 @@ function loop () {
 
 	trees.forEach(t => t.draw());
 	petals.forEach(p => p.draw());
-    step += (Math.PI / 80) % Math.PI;
+    step += Math.PI / 200;
 }
 
+function random (min, max) {
+    return Math.random() * (max - min + 1) + min;
+}
+
+function random_round (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 
 </script>

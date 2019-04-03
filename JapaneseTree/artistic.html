@@ -1,0 +1,144 @@
+<canvas id="gc" width="800" height="800"></canvas>
+<script type="text/javascript" src="Petals.js"></script>
+<script>
+var FPS = 60;
+var INTERVAL_SEC = 1000 / FPS >> 0;
+
+canv = document.getElementById("gc");
+ctx = canv.getContext("2d");
+var step = 0.0;
+var toRadian = Math.PI / 180;
+
+// Sky
+ctx.fillStyle = "#ffa8a8";
+ctx.fillRect(0, 0, canv.width, canv.height);
+
+// Sun
+ctx.fillStyle = "#ffffff";
+ctx.beginPath();
+ctx.arc(650, 100, 150, 0, 2 * Math.PI);
+ctx.fill();
+
+let leafs = [];
+let petals = [];
+for (let i = 0; i < 500; ++i) {
+    petals.push(new Petal(random(0, 800), random(0, 800)));
+}
+
+drawTree(400, 800, 100, 100, 0);
+for (let i = 0; i < leafs.length; ++i) {
+    let l = leafs[i];
+    drawLeaf(l.x, l.y);
+}
+for (let i = 0; i < petals.length; ++i) {
+    let p = petals[i];
+    p.draw();
+}
+
+function random (min, max) {
+    return Math.random() * (max - min + 1) + min;
+}
+
+function random_round (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function drawTree (x, y, tw, w, desv) {
+    let nx, ny;
+    while (w > 0) {
+        let dx = Math.cos(random(0, w)) * 10;
+        let dy = -random(3, 8);
+        nx = x + dx + desv
+        ny = y + dy
+
+        drawBox(x, y, nx, ny, w)
+
+        x = nx;
+        y = ny;
+        w -= 1;
+
+        let ld = -w/8;
+        let rd = w/8;
+        
+        if (random_round(0,tw) > w*8 && Math.random() < 0.7) { // Small trunks
+            let rx = x
+            let ry = y
+            let rw = random(ld, rd);
+            drawTree(rx, ry, tw, w, rw);
+        }
+        else if (random_round(0,tw) > w*3 && Math.random() < 0.3) { // From half trunk
+            let rx = x
+            let ry = y
+            let rw = random(ld, rd);
+            drawTree(rx, ry, tw, random(w/5, w), rw);
+        }
+        else if (random_round(0,tw) > w*2 && Math.random() < 0.1) { // From half trunk
+            let rx = x
+            let ry = y
+            let rw = random(ld, rd);
+            drawTree(rx, ry, tw, random(w/5, w), rw);
+        }
+
+        if (w === tw*0.5) { // Half way split
+            let n = random_round(1,2);
+            for (let i = 0; i < n; ++i) {
+                let rx = x
+                let ry = y
+                let rw = random(ld, rd);
+                drawTree(rx, ry, tw, w, rw);
+            }
+        }
+
+        if (w === tw*0.8) { // Starting split
+            let n = random_round(1,2);
+            for (let i = 0; i < n; ++i) {
+                let rx = x
+                let ry = y
+                let rw = random(ld, rd);
+                drawTree(rx, ry, tw, w, rw);
+            }
+        }
+    }
+    leafs.push({
+        x: nx,
+        y: ny
+    })
+}
+
+function drawBox (x, y, nx, ny, w) {
+    ctx.beginPath();
+    ctx.lineWidth = w;
+    ctx.strokeStyle = "#8D89A6";
+    ctx.moveTo(x, y);
+    ctx.lineTo(nx, ny);
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.lineWidth = w;
+    ctx.strokeStyle = "#BFABCB";
+    ctx.moveTo(x + w/2, y);
+    ctx.lineTo(nx + w/2, ny);
+    ctx.lineCap = 'round';
+    ctx.stroke();
+}
+
+function drawLeaf (x, y) {
+    let r = random_round(4,8);
+    let sr = r/3*1.4
+    let ox = sr/random(2,3) * (random_round(0,1) ? -1 : 1);
+    let oy = -sr/random(2,3);
+
+    ctx.fillStyle = "#ffc1e5";
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, 2 * Math.PI);
+    ctx.fill();
+
+    let a = random(0, Math.PI)
+    ctx.fillStyle = "#ffe8f4";
+    ctx.beginPath();
+    ctx.arc(x + ox, y + oy, sr, a, a+Math.PI);
+    ctx.fill();
+}
+
+</script>

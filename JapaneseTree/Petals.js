@@ -20,9 +20,10 @@ class Petal {
     }
 
     draw () {
+        let a = random(0, Math.PI)
         ctx.fillStyle = "#fff";
         ctx.beginPath();
-        ctx.arc(this.rx, this.y, 1, 0, 2 * Math.PI);
+        ctx.arc(this.rx, this.y, 1.2, a, a+Math.PI);
         ctx.fill();
     }
 }
