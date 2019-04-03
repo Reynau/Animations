@@ -1,4 +1,4 @@
-<canvas id="gc" width="800" height="800"></canvas>
+<canvas id="gc" width="1920" height="1080"></canvas>
 <script type="text/javascript" src="Petals.js"></script>
 <script>
 var FPS = 60;
@@ -21,19 +21,29 @@ ctx.fill();
 
 let leafs = [];
 let petals = [];
-for (let i = 0; i < 500; ++i) {
-    petals.push(new Petal(random(0, 800), random(0, 800)));
+for (let i = 0; i < 1000; ++i) {
+    petals.push(new Petal(random(0, 1920), random(0, 1080)));
 }
 
-drawTree(400, 800, 100, 100, 0);
+drawTree(500, 1080, 50, 60, 0);
+
 for (let i = 0; i < leafs.length; ++i) {
     let l = leafs[i];
-    drawLeaf(l.x, l.y);
+    let n = random(40, 80);
+    for (let i = 0; i < n; ++i) {
+        let r = random(1, 150);
+        let a = random(0, 2*Math.PI);
+        let x = l.x + r * Math.cos(a);
+        let y = l.y + r * Math.sin(a);
+        drawLeaf(x, y);
+    }
 }
+
 for (let i = 0; i < petals.length; ++i) {
     let p = petals[i];
     p.draw();
 }
+
 
 function random (min, max) {
     return Math.random() * (max - min + 1) + min;
@@ -43,66 +53,47 @@ function random_round (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function drawTree (x, y, tw, w, desv) {
+function getBranchingPoints (bl) {
+    let n_branch_points = random_round(0, bl/5);
+    let branch_points = [];
+    for (let i = 0; i < n_branch_points; ++i) {
+        branch_points.push(random_round(5, bl));
+    }
+    return branch_points;
+}
+
+function drawTree (x, y, w, bl, d) {
     let nx, ny;
-    while (w > 0) {
-        let dx = Math.cos(random(0, w)) * 10;
-        let dy = -random(3, 8);
-        nx = x + dx + desv
+    let bp = getBranchingPoints(bl);
+    while (bl > 0) {
+        let dx = Math.cos(random(0, w)) * (w > 2 ? 10 : 5);
+        let dy = -random(10, 20);
+        nx = x + dx + d
         ny = y + dy
 
         drawBox(x, y, nx, ny, w)
 
         x = nx;
         y = ny;
-        w -= 1;
-
-        let ld = -w/8;
-        let rd = w/8;
         
-        if (random_round(0,tw) > w*8 && Math.random() < 0.7) { // Small trunks
-            let rx = x
-            let ry = y
-            let rw = random(ld, rd);
-            drawTree(rx, ry, tw, w, rw);
-        }
-        else if (random_round(0,tw) > w*3 && Math.random() < 0.3) { // From half trunk
-            let rx = x
-            let ry = y
-            let rw = random(ld, rd);
-            drawTree(rx, ry, tw, random(w/5, w), rw);
-        }
-        else if (random_round(0,tw) > w*2 && Math.random() < 0.1) { // From half trunk
-            let rx = x
-            let ry = y
-            let rw = random(ld, rd);
-            drawTree(rx, ry, tw, random(w/5, w), rw);
+        let b = bp.find(x => { return x === bl });
+        if (b) {
+            let nl = random(bl/2, bl);
+            let nw = Math.floor(nl * 0.8);
+            let nd = random(-8, 8);
+            drawTree(x, y, nw, nl, nd);
         }
 
-        if (w === tw*0.5) { // Half way split
-            let n = random_round(1,2);
-            for (let i = 0; i < n; ++i) {
-                let rx = x
-                let ry = y
-                let rw = random(ld, rd);
-                drawTree(rx, ry, tw, w, rw);
-            }
+        if (w < 5) {
+            leafs.push({
+                x: nx,
+                y: ny
+            })
         }
 
-        if (w === tw*0.8) { // Starting split
-            let n = random_round(1,2);
-            for (let i = 0; i < n; ++i) {
-                let rx = x
-                let ry = y
-                let rw = random(ld, rd);
-                drawTree(rx, ry, tw, w, rw);
-            }
-        }
-    }
-    leafs.push({
-        x: nx,
-        y: ny
-    })
+        if (w > 2) w -= 1;
+        --bl;
+    } 
 }
 
 function drawBox (x, y, nx, ny, w) {
