@@ -2,6 +2,10 @@
 
 Procedural animations made using Javascript and Canvas.
 
+## Development
+- Requirements: No requirements
+- Build & install: Doesn't need to build or install, just to serve statically the html file.
+
 ## List of animations
 [Starfield](http://lopezreynau.me/Animations/Starfield/)  
 [Game Of Life](http://lopezreynau.me/Animations/GameOfLife/)  
