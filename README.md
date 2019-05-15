@@ -1,5 +1,8 @@
 # Animations
 
+Procedural animations made using Javascript and Canvas.
+
+## List of animations
 [Starfield](http://lopezreynau.me/Animations/Starfield/)  
 [Game Of Life](http://lopezreynau.me/Animations/GameOfLife/)  
 [Fractal Trees](http://lopezreynau.me/Animations/FractalTrees/)  
