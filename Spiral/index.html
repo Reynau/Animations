@@ -1,0 +1,56 @@
+<canvas id="gc" width="800" height="800"></canvas>
+<script type="text/javascript" src="dat.gui.min.js"></script>
+<script type="text/javascript" src="Spiral.js"></script>
+<script>
+
+var timestep = 1000 / 60
+var lastFrame = Date.now()
+var delta = 0
+
+let spiral = null;
+
+function updateDelta () {
+	let timestamp = Date.now()
+	delta = timestamp - lastFrame
+	lastFrame = timestamp
+}
+
+function loop () {
+	updateDelta()
+	while (delta >= timestep) {
+        spiral.update();
+        spiral.render();
+		delta -= timestep
+	}
+}
+
+window.onload = function () {
+	canv = document.getElementById("gc");
+    ctx = canv.getContext("2d");
+    
+    spiral = new Spiral();
+
+    gui = new dat.GUI();
+    
+    
+    var generalControls = gui.addFolder("General");
+    generalControls.add(spiral, 'numPoints');
+    generalControls.add(spiral, 'pointSize');
+    generalControls.add(spiral, 'distancePow');
+    generalControls.open();
+
+    var turnFractionControls = generalControls.addFolder("Turn Fraction");
+    turnFractionControls.add(spiral, 'turnFraction', 0.00000, 9999.9999).listen();
+    turnFractionControls.add(spiral, 'turnFractionIncrement', 0.00000, 0.001);
+    turnFractionControls.add(spiral, 'turnFractionAutoIncrement');
+    turnFractionControls.open();
+
+    var highlightControls = generalControls.addFolder("Highlight");
+    highlightControls.add(spiral, 'highlight');
+    highlightControls.add(spiral, 'highlightOffset');
+    highlightControls.open();
+
+
+	setInterval(loop, 1000/30);
+}
+</script>

@@ -1,0 +1,52 @@
+<canvas id="gc" width="800" height="800"></canvas>
+<script type="text/javascript" src="dat.gui.min.js"></script>
+<script type="text/javascript" src="Flower.js"></script>
+<script>
+
+var timestep = 1000 / 60
+var lastFrame = Date.now()
+var delta = 0
+
+let flower = null;
+
+function updateDelta () {
+	let timestamp = Date.now()
+	delta = timestamp - lastFrame
+	lastFrame = timestamp
+}
+
+function loop () {
+	updateDelta()
+	while (delta >= timestep) {
+        flower.update();
+        flower.render();
+		delta -= timestep
+	}
+}
+
+window.onload = function () {
+	canv = document.getElementById("gc");
+    ctx = canv.getContext("2d");
+    
+    flower = new Flower();
+
+    gui = new dat.GUI();
+    
+    var generalControls = gui.addFolder("General");
+    let numPetalsController = generalControls.add(flower, 'numPetals');
+    let petalSizeController = generalControls.add(flower, 'petalSize');
+    let distancePowController = generalControls.add(flower, 'distancePow');
+    generalControls.open();
+
+    var turnFractionControls = generalControls.addFolder("Turn Fraction");
+    let flowerSeedController = turnFractionControls.add(flower, 'flowerSeed', 0.00000, 9999.9999).listen();
+    turnFractionControls.open();
+
+	numPetalsController.onChange(() => flower.render());
+	petalSizeController.onChange(() => flower.render());
+	distancePowController.onChange(() => flower.render());
+	flowerSeedController.onChange(() => flower.render());
+
+    flower.render();
+}
+</script>
