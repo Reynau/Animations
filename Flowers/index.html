@@ -2,27 +2,7 @@
 <script type="text/javascript" src="dat.gui.min.js"></script>
 <script type="text/javascript" src="Flower.js"></script>
 <script>
-
-var timestep = 1000 / 60
-var lastFrame = Date.now()
-var delta = 0
-
 let flower = null;
-
-function updateDelta () {
-	let timestamp = Date.now()
-	delta = timestamp - lastFrame
-	lastFrame = timestamp
-}
-
-function loop () {
-	updateDelta()
-	while (delta >= timestep) {
-        flower.update();
-        flower.render();
-		delta -= timestep
-	}
-}
 
 window.onload = function () {
 	canv = document.getElementById("gc");
