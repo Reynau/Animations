@@ -1,0 +1,58 @@
+<canvas id="gc" width="800" height="800"></canvas>
+<script type="text/javascript" src="Pipe.js"></script>
+<script>
+
+var timestep = 1000 / 60
+var lastFrame = Date.now()
+var delta = 0
+
+// Render vars
+var renderInQueue = false;
+
+
+let pipes = [];
+let numPipes = 100;
+
+function init () {
+    for (let i = 0; i < numPipes; ++i) {
+        pipes.push(new Pipe());
+    }
+}
+
+function updateDelta () {
+	let timestamp = Date.now()
+	delta = timestamp - lastFrame
+	lastFrame = timestamp
+}
+
+function loop () {
+	updateDelta()
+	while (delta >= timestep) {
+		update()
+		delta -= timestep
+	}
+
+	// Rendering goes independent of logic. Logic always run.
+	if (!renderInQueue) {
+		window.requestAnimationFrame(render)
+		renderInQueue = true
+	}
+}
+
+function update () {
+    pipes.forEach(pipe => pipe.update())
+}
+
+function render () {
+	renderInQueue = false
+    pipes.forEach(pipe => pipe.render())
+}
+
+window.onload = function () {
+	canv = document.getElementById("gc");
+    ctx = canv.getContext("2d");
+    
+    init();
+    setInterval(loop, 1000/30);
+}
+</script>
