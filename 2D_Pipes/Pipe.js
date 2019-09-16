@@ -12,8 +12,8 @@ class Pipe {
         };
 
         this.speed = {
-            x: random_round(5, 10),
-            y: random_round(5, 10)
+            x: random_round(5, 10) * random_select(-1, 1),
+            y: random_round(5, 10) * random_select(-1, 1)
         };
     }
 
@@ -42,4 +42,9 @@ function random_round (min, max) {
 
 function random (min, max) {
     return Math.random() * (max - min + 1) + min;
+}
+
+function random_select (opt1, opt2) {
+    let r = random_round(0, 1);
+    return r ? opt1 : opt2;
 }
