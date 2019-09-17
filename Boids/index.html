@@ -1,0 +1,116 @@
+<canvas id="gc" width="4000" height="4000"></canvas>
+<script type="text/javascript" src="dat.gui.min.js"></script>
+<script type="text/javascript" src="Boid.js"></script>
+<script type="text/javascript" src="Boids.js"></script>
+<script>
+
+let numBoids = 500;
+let boids = undefined;
+
+function loop () {
+	update();
+	render();
+}
+
+function update () {
+	boids.update();
+}
+
+function render () {
+	renderInQueue = false
+	
+	ctx.fillStyle = "#fff";
+	ctx.fillRect(0, 0, canv.width, canv.height);
+		
+    boids.render();
+}
+
+window.onload = function () {
+	canv = document.getElementById("gc");
+    ctx = canv.getContext("2d");
+	
+	console.log(canv.width, canv.height)
+
+	boids = new Boids(numBoids)
+
+	gui = new dat.GUI();
+    
+    var generalControls = gui.addFolder("General");
+    generalControls.add(boids, 'stopped');
+    generalControls.add(boids, 'separationWeight');
+    generalControls.add(boids, 'separationWeightFraction');
+    generalControls.add(boids, 'alignmentWeightFraction');
+    generalControls.add(boids, 'cohesionWeightFraction');
+    generalControls.open();
+
+    setInterval(loop, 1000/60);
+}
+
+
+function getVector(p, q) {
+	return {x: q.x - p.x, y: q.y - p.y}
+}
+
+function normalize (v) {
+	let d = distanceBetween(v, {x:0,y:0});
+	if (d === 0) return {x:0, y:0}
+    return divideVectorByScalar(v, d);
+}
+
+function sumVectors () {
+    let base = {x:arguments[0].x, y:arguments[0].y};
+
+    for (var i = 1; i < arguments.length; i++) {
+        base.x += arguments[i].x;
+        base.y += arguments[i].y;
+    }
+
+    return base;
+}
+
+function substractVectors () {
+    let base = {x:arguments[0].x, y:arguments[0].y};
+
+    for (var i = 1; i < arguments.length; i++) {
+        base.x -= arguments[i].x;
+        base.y -= arguments[i].y;
+    }
+
+    return base;
+}
+
+function divideVectorByScalar(v, s) {
+    return {x: v.x / s, y: v.y / s};
+}
+
+function multVectorByScalar(v, s) {
+    return {x: v.x * s, y: v.y * s};
+}
+
+function distanceBetween (p1, p2) {
+    let dx = Math.abs(p2.x - p1.x)
+    let dy = Math.abs(p2.y - p1.y)
+	let x = Math.min(dx, canv.width - dx);
+	let y = Math.min(dy, canv.height - dy);
+	return Math.sqrt(x*x+y*y);
+}
+
+function random_round (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function random (min, max) {
+    return Math.random() * (max - min + 1) + min;
+}
+
+function random_select (opt1, opt2) {
+    let r = random_round(0, 1);
+    return r ? opt1 : opt2;
+}
+
+function interpolate (v1, v2, a) {
+    let subs = substractVectors(v2, v1);
+    let mult = multVectorByScalar(subs, a);
+    return sumVectors(a, mult);
+}
+</script>
