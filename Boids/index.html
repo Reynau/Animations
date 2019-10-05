@@ -113,4 +113,10 @@ function interpolate (v1, v2, a) {
     let mult = multVectorByScalar(subs, a);
     return sumVectors(a, mult);
 }
+
+function vectorMagnitude (v) {
+    let x = v.x;
+    let y = v.y;
+    return Math.sqrt(x*x+y*y);
+}
 </script>

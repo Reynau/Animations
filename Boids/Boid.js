@@ -19,6 +19,8 @@ class Boid {
             x: r ,
             y: (1-r)
         }
+
+        this.velocity = multVectorByScalar(this.direction, this.speed);
     }
 
     getPosition () {
@@ -32,6 +34,19 @@ class Boid {
     setDirection (newDirection) {
         newDirection = normalize(newDirection);
         this.direction = { x: newDirection.x, y: newDirection.y };
+    }
+
+    getSpeed () {
+        return this.speed;
+    }
+
+    setSpeed (newSpeed) {
+        this.speed = newSpeed;
+    }
+
+    getVelocity () {
+        this.velocity = multVectorByScalar(this.direction, this.speed);
+        return { x: this.velocity.x, y: this.velocity.y };
     }
 
     update () {

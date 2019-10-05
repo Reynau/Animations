@@ -22,13 +22,10 @@ class Boids {
         if (this.stopped) return;
 
         this.boids.forEach(boid => {
-            let collisionAvoidanceVector = this.collisionAvoidance(boid);
-            let velocityMatchingVector = this.velocityMatching(boid);
-            let flockCenteringVector = this.flockCentering(boid);
+            this.collisionAvoidance(boid);
+            this.velocityMatching(boid);
+            this.flockCentering(boid);
 
-            let dir = boid.getDirection();
-            let newDir = sumVectors(dir, collisionAvoidanceVector, velocityMatchingVector, flockCenteringVector);
-            boid.setDirection(newDir);
             boid.update();
         })
     }
@@ -59,15 +56,19 @@ class Boids {
         this.boids.forEach(b => {
             if (boid.id === b.id) return;
 
-            let dir = b.getDirection();
-            velocitySum = sumVectors(velocitySum, dir);
+            let vel = b.getVelocity();
+            velocitySum = sumVectors(velocitySum, vel);
         })
         velocitySum = divideVectorByScalar(velocitySum, this.numBoids-1);
-        velocitySum = normalize(velocitySum);
 
-        let velocityDiff = substractVectors(velocitySum, boid.getDirection())
+        let velocityDiff = substractVectors(velocitySum, boid.getVelocity())
+        velocityDiff = divideVectorByScalar(velocityDiff, this.alignmentWeightFraction);
 
-        return divideVectorByScalar(velocityDiff, this.alignmentWeightFraction);
+        let velocitySpeed = vectorMagnitude(velocityDiff);
+        let velocityDir = normalize(velocityDiff);
+
+        boid.setSpeed(boid.getSpeed() + velocitySpeed);
+        boid.setDirection(boid.getDirection() + velocityDir);
     }
 
     flockCentering (boid) {
