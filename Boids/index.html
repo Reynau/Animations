@@ -88,11 +88,27 @@ function multVectorByScalar(v, s) {
 }
 
 function distanceBetween (p1, p2) {
-    let dx = Math.abs(p2.x - p1.x)
-    let dy = Math.abs(p2.y - p1.y)
-	let x = Math.min(dx, canv.width - dx);
-	let y = Math.min(dy, canv.height - dy);
-	return Math.sqrt(x*x+y*y);
+    const normalDistanceVal = normalDistance(p1, p2);
+    const distanceThroughWallsVal = distanceThroughWalls(p1, p2);
+    const dx = Math.min(normalDistanceVal.x, distanceThroughWallsVal.x);
+    const dy = Math.min(normalDistanceVal.y, distanceThroughWallsVal.y);
+	return Math.sqrt(dx*dx+dy*dy);
+}
+
+function normalDistance (p1, p2) {
+    return {
+        x: Math.abs(p2.x - p1.x),
+        y: Math.abs(p2.y - p1.y)
+    }
+}
+
+function distanceThroughWalls (p1, p2) {
+    const canvasWidth = 4000; 
+    const canvasHeight = 4000;
+    return {
+        x: (Math.min(p1.x, p2.x) + canvasWidth) - Math.max(p1.x, p2.x),
+        y: (Math.min(p1.y, p2.y) + canvasHeight) - Math.max(p1.y, p2.y)
+    }
 }
 
 function random_round (min, max) {

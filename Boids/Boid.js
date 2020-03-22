@@ -16,7 +16,7 @@ class Boid {
         
         let r = Math.random();
         this.direction = {
-            x: r ,
+            x: r,
             y: (1-r)
         }
 
@@ -49,16 +49,82 @@ class Boid {
         return { x: this.velocity.x, y: this.velocity.y };
     }
 
-    update () {
+    collisionAvoidance (boids, config) {
+        let vectorSum = {x:0, y:0};
+        boids.forEach(boid => {
+            if (this.id === boid.id) return;
+
+            let distance = distanceBetween(boid.getPosition(), this.getPosition());
+            if (distance > config.separationWeight) return;
+
+            let pushVector = getVector(boid.getPosition(), this.getPosition());
+            vectorSum = sumVectors(vectorSum, pushVector);
+        })
+        vectorSum = normalize(vectorSum);
+        vectorSum = divideVectorByScalar(vectorSum, config.separationWeightFraction);
+        
+        this.setDirection(sumVectors(this.direction, vectorSum));
+    }
+
+    velocityMatching (boids, config) {
+        let numBoids = 0;
+        let velocitySum = {x:0, y:0};
+
+        boids.forEach(boid => {
+            if (this.id === boid.id) return;
+
+            let distance = distanceBetween(boid.getPosition(), this.getPosition());
+            if (distance > config.separationWeight) return;
+
+            velocitySum = sumVectors(velocitySum, boid.getVelocity());
+            ++numBoids;
+        })
+        velocitySum = divideVectorByScalar(velocitySum, numBoids);
+
+        let velocityDiff = substractVectors(velocitySum, this.getVelocity())
+        velocityDiff = divideVectorByScalar(velocityDiff, config.alignmentWeightFraction);
+
+        let velocitySpeed = vectorMagnitude(velocityDiff);
+        let velocityDir = normalize(velocityDiff);
+
+        this.setSpeed(this.getSpeed() + velocitySpeed);
+        this.setDirection(sumVectors(this.getDirection(), velocityDir));
+    }
+
+    flockCentering (boids, config) {
+        const numBoids = boids.length;
+        let flockCenter = {x:0,y:0};
+
+        boids.forEach(b => {
+            if (this.id === b.id) return;
+
+            let pos = b.getPosition();
+            flockCenter = sumVectors(flockCenter, pos);
+        })
+
+        flockCenter = divideVectorByScalar(flockCenter, numBoids-1);
+
+        let pushVector = normalize(getVector(this.getPosition(), flockCenter));
+        pushVector = divideVectorByScalar(pushVector, config.cohesionWeightFraction);
+
+        this.setDirection(sumVectors(this.direction, pushVector));
+    }
+
+    updatePosition () {
         this.position = sumVectors(this.position, multVectorByScalar(this.direction, this.speed));
 
         if (this.position.x < 0) this.position.x = canv.width;
         if (this.position.x > canv.width) this.position.x = 0;
         if (this.position.y < 0) this.position.y = canv.height;
         if (this.position.y > canv.height) this.position.y = 0;
-/*
-        if (this.position.x < 0 || this.position.x > canv.width) this.direction.x *= -1;
-        if (this.position.y < 0 || this.position.y > canv.height) this.direction.y *= -1;*/
+    }
+
+    update (boids, config) {
+        this.collisionAvoidance(boids, config);
+        this.flockCentering(boids, config);
+        //this.velocityMatching(boids, config);
+
+        this.updatePosition();
     }
 
     render () {
