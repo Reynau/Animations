@@ -1,0 +1,37 @@
+<canvas id="gc" width="1920" height="1080"></canvas>
+<script type="text/javascript" src="Petal.js"></script>
+<script type="text/javascript" src="Tree.js"></script>
+<script>
+
+canv = document.getElementById("gc");
+ctx = canv.getContext("2d");
+
+var toRadians = Math.PI / 180;
+
+// Sky
+ctx.fillStyle = "#ffa8a8";
+ctx.fillRect(0, 0, canv.width, canv.height);
+
+// Sun
+ctx.fillStyle = "#ffffff";
+ctx.beginPath();
+ctx.arc(650, 100, 150, 0, 2 * Math.PI);
+ctx.fill();
+
+let sakura = new Tree(500, 1080, 50, 90, 500);
+sakura.draw();
+
+function random_round (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function random (min, max) {
+    return Math.random() * (max - min + 1) + min;
+}
+
+function random_select (opt1, opt2) {
+    let r = random_round(0, 1);
+    return r ? opt1 : opt2;
+}
+
+</script>

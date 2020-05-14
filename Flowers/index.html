@@ -1,16 +1,33 @@
-<canvas id="gc" width="800" height="800"></canvas>
-<script type="text/javascript" src="dat.gui.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+	<style>
+		html, body { 
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+</head>
+<body>
+    <script type="text/javascript" src="dat.gui.min.js"></script>
 <script type="text/javascript" src="Flower.js"></script>
 <script>
 let flower = null;
 
 window.onload = function () {
-	canv = document.getElementById("gc");
+    canv = document.createElement('canvas');
+	canv.width = 400;
+	canv.height = 400;
+	document.body.appendChild(canv);
     ctx = canv.getContext("2d");
     
     flower = new Flower();
 
     gui = new dat.GUI();
+    gui.close();
     
     var generalControls = gui.addFolder("General");
     let numPetalsController = generalControls.add(flower, 'numPetals');
@@ -30,3 +47,6 @@ window.onload = function () {
     flower.render();
 }
 </script>
+</body>
+</html>
+

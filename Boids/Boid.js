@@ -12,7 +12,7 @@ class Boid {
             y: random_round(0, canv.height)
         };
 
-        this.speed = 5;
+        this.speed = 3;
         
         let r = Math.random();
         this.direction = {

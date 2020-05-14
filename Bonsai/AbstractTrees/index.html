@@ -1,0 +1,25 @@
+<canvas id="gc" width="1920" height="1080"></canvas>
+<script type="text/javascript" src="Bonsai.js"></script>
+<script type="text/javascript" src="CurveFunctions.js"></script>
+<script>
+
+canv = document.getElementById("gc");
+ctx = canv.getContext("2d");
+
+const bonsai = new Bonsai({x: 400, y: 900}, 90, 400);
+bonsai.generate(Hokidachi);
+bonsai.draw();
+
+function random (min, max) {
+    return Math.random() * (max - min + 1) + min;
+}
+
+function random_round (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function toRadians (angle) {
+    return angle * -Math.PI/180
+}
+
+</script>

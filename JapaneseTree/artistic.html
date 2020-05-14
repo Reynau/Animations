@@ -62,21 +62,21 @@ function getBranchingPoints (bl) {
     return branch_points;
 }
 
-function drawTree (x, y, w, bl, d) {
-    let nx, ny;
-    let bp = getBranchingPoints(bl);
+function drawTree (x, y, width, bl, d) {
+    let newX, newY;
+    let branchingPoints = getBranchingPoints(bl);
     while (bl > 0) {
-        let dx = Math.cos(random(0, w)) * (w > 2 ? 10 : 5);
+        let dx = Math.cos(random(0, width)) * (width > 2 ? 10 : 5);
         let dy = -random(10, 20);
-        nx = x + dx + d
-        ny = y + dy
+        newX = x + dx + d
+        newY = y + dy
 
-        drawBox(x, y, nx, ny, w)
+        drawBox(x, y, newX, newY, width)
 
-        x = nx;
-        y = ny;
+        x = newX;
+        y = newY;
         
-        let b = bp.find(x => { return x === bl });
+        let b = branchingPoints.find(x => { return x === bl });
         if (b) {
             let nl = random(bl/2, bl);
             let nw = Math.floor(nl * 0.8);
@@ -84,32 +84,32 @@ function drawTree (x, y, w, bl, d) {
             drawTree(x, y, nw, nl, nd);
         }
 
-        if (w < 5) {
+        if (width < 5) {
             leafs.push({
-                x: nx,
-                y: ny
+                x: newX,
+                y: newY
             })
         }
 
-        if (w > 2) w -= 1;
+        if (width > 2) width -= 1;
         --bl;
     } 
 }
 
-function drawBox (x, y, nx, ny, w) {
+function drawBox (x, y, newX, newY, width) {
     ctx.beginPath();
-    ctx.lineWidth = w;
+    ctx.lineWidth = width;
     ctx.strokeStyle = "#8D89A6";
     ctx.moveTo(x, y);
-    ctx.lineTo(nx, ny);
+    ctx.lineTo(newX, newY);
     ctx.lineCap = 'round';
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.lineWidth = w;
+    ctx.lineWidth = width;
     ctx.strokeStyle = "#BFABCB";
-    ctx.moveTo(x + w/2, y);
-    ctx.lineTo(nx + w/2, ny);
+    ctx.moveTo(x + width/2, y);
+    ctx.lineTo(newX + width/2, newY);
     ctx.lineCap = 'round';
     ctx.stroke();
 }

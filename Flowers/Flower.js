@@ -5,14 +5,14 @@ class Flower {
         this.strokeColor = '#4d0606';
 
         this.numPetals = 80;
-        this.petalSize = 2;
+        this.petalSize = 1.5;
         this.distancePow = 1;
 
         this.flowerSeed = 0.618033;
     }
 
     render () {
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = "#f7f6f5";
         ctx.fillRect(0, 0, canv.width, canv.height);
         
         let points = [];

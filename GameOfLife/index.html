@@ -1,4 +1,18 @@
-<canvas id="gc" width="400" height="400"></canvas>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		html, body { 
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+</head>
+<body>
 <script type="text/javascript" src="dat.gui.min.js"></script>
 <script>
 
@@ -37,7 +51,7 @@ function update () {
 }
 
 function draw () {
-	ctx.fillStyle = "white";
+	ctx.fillStyle = "#f7f6f5";
 	ctx.fillRect(0, 0, canv.width, canv.height);
 
 	for (var i = 0; i < vars.board_size; ++i) {
@@ -70,7 +84,10 @@ function count_neighbours (i, j) {
 }
 
 window.onload = function () {
-	canv = document.getElementById("gc");
+	canv = document.createElement('canvas');
+	canv.width = 400;
+	canv.height = 400;
+	document.body.appendChild(canv);
 	ctx = canv.getContext("2d");
 
 	vars.square_size = canv.width / vars.board_size;
@@ -100,3 +117,6 @@ function random_round (min, max, round) {
 }
 
 </script>
+</body>
+</html>
+

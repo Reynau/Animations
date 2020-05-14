@@ -1,14 +1,27 @@
-<canvas id="gc" width="800" height="800"></canvas>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewporadio_ratio" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		html, body { 
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+</head>
+<body>
 <script type="text/javascript" src="dat.gui.min.js"></script>
 <script>
 
 var vars = {
 	max_stars: 2000,	// Max stars
-	n_stars: 400,		// Num stars
-	rt: 0.004,			// Radio ratio
+	num_stars: 400,		// Num stars
+	radio_ratio: 0.004,			// Radio ratio
 	v: 0.1,				// Speed ratio
-	star_c: "#FFFFFF",	// Star color
-	line_c: "#202020", // Line color
+	star_color: "#FFFFFF",	// Star color
+	line_color: "#202020", // Line color
 }
 
 var stars = [];
@@ -20,7 +33,7 @@ function createStar (w, h) {
 		px: this.x,	// Previous point
 		py: this.y, // Previous point
 		z: distance(this.x, this.y, w/2, h/2),
-		r: vars.rt*this.z,
+		r: vars.radio_ratio*this.z,
 		out: false,	// This var keep updating the star one frame after going outside of the canvas to draw the exiting line
 		update: function () {
 			var xc = w/2;
@@ -33,16 +46,16 @@ function createStar (w, h) {
 			this.x += vars.v*xv;
 			this.y += vars.v*yv;
 			this.z = distance(this.x, this.y, w/2, h/2);
-			this.r = vars.rt*this.z;
+			this.r = vars.radio_ratio*this.z;
 
-			// Restart star when out of view
+			// Restaradio_ratio star when out of view
 			if (this.out) {
 				this.x = Math.random() * w;
 				this.y = Math.random() * h;
 				this.px = this.x;
 				this.py = this.y;
 				this.z = distance(this.x, this.y, w/2, h/2);
-				this.r = vars.rt*this.z;
+				this.r = vars.radio_ratio*this.z;
 				this.out = false;
 			}
 			else if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) {
@@ -56,7 +69,7 @@ function createStar (w, h) {
 			if (!this.out) { // If the point is outside of the canvas, we dont need to draw it
 				ctx.beginPath();
 				ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
-				ctx.fillStyle = vars.star_c;
+				ctx.fillStyle = vars.star_color;
 				ctx.fill();
 			}
 
@@ -64,7 +77,7 @@ function createStar (w, h) {
 			ctx.beginPath();
 			ctx.moveTo(this.px, this.py);
 			ctx.lineTo(this.x, this.y);
-			ctx.strokeStyle = vars.line_c;
+			ctx.strokeStyle = vars.line_color;
 			ctx.stroke();
 		}
 	}
@@ -76,7 +89,7 @@ function loop () {
 }
 
 function update () {
-	for (var i = 0; i < vars.n_stars; ++i) {
+	for (var i = 0; i < vars.num_stars; ++i) {
 		stars[i].update();
 	}
 }
@@ -86,7 +99,7 @@ function draw () {
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, canv.width, canv.height);
 	// Stars
-	for (var i = 0; i < vars.n_stars; ++i) {
+	for (var i = 0; i < vars.num_stars; ++i) {
 		stars[i].draw();
 	}
 }
@@ -101,7 +114,11 @@ function square (x) {
 
 
 window.onload = function () {
-	canv = document.getElementById("gc");
+	canv = document.createElement('canvas');
+	canv.width = 400;
+	canv.height = 400;
+	document.body.appendChild(canv);
+
 	ctx = canv.getContext("2d");
 
 	for (var i = 0; i < vars.max_stars; ++i) {
@@ -109,13 +126,16 @@ window.onload = function () {
 	}
 
 	var gui = new dat.GUI();
-	gui.add(vars, 'n_stars', 0, vars.max_stars);
-	gui.add(vars, 'rt', 0, 0.005);
+	gui.add(vars, 'num_stars', 0, vars.max_stars);
+	gui.add(vars, 'radio_ratio', 0, 0.005);
 	gui.add(vars, 'v', 0, 1);
-	gui.add(vars, 'star_c');
-	gui.add(vars, 'line_c');
+	gui.add(vars, 'star_color');
+	gui.add(vars, 'line_color');
+	gui.close();
 
 	setInterval(loop, 1000/30);
 }
 
 </script>
+</body>
+</html>

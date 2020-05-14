@@ -1,5 +1,18 @@
-<canvas id="gc" width="800" height="800"></canvas>
-<script type="text/javascript" src="dat.gui.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+	<style>
+		html, body { 
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+</head>
+<body>
+    <script type="text/javascript" src="dat.gui.min.js"></script>
 <script type="text/javascript" src="Spiral.js"></script>
 <script>
 
@@ -25,7 +38,10 @@ function loop () {
 }
 
 window.onload = function () {
-	canv = document.getElementById("gc");
+	canv = document.createElement('canvas');
+	canv.width = 400;
+	canv.height = 400;
+	document.body.appendChild(canv);
     ctx = canv.getContext("2d");
     
     spiral = new Spiral();
@@ -50,7 +66,12 @@ window.onload = function () {
     highlightControls.add(spiral, 'highlightOffset');
     highlightControls.open();
 
+    gui.close();
 
 	setInterval(loop, 1000/30);
 }
 </script>
+</body>
+</html>
+
+

@@ -1,125 +1,147 @@
-<canvas id="gc" width="800" height="800"></canvas>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		html, body { 
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+</head>
+<body>
+	
 <script>
-
-var vars = {
-	max_depth: 10,
-	tree_color: '#000000',
-	initial_length: 100,
-}
-
-var parent_nodes = [];
-
-function create_node (x, y, angle, length, depth) {
-	return {
-		x: x,
-		y: y,
-		angle: angle,
-		depth: depth,
-		length: length,
-		childs: [],
+	var vars = {
+		max_depth: 10,
+		tree_color: '#000000',
+		initial_length: 50,
 	}
-}
-
-function create_child_nodes (parent_node) {
-	var d = parent_node.depth + 1;
-	// Right child
-	var ra = parent_node.angle + Math.PI / random(3,10);
-	var rl = parent_node.length * 0.8;
-	var rx = parent_node.x + Math.cos(ra) * rl;
-	var ry = parent_node.y - Math.sin(ra) * rl;
-	// Left child
-	var la = parent_node.angle - Math.PI / random(3,10);
-	var ll = parent_node.length * 0.8;
-	var lx = parent_node.x + Math.cos(la) * ll;
-	var ly = parent_node.y - Math.sin(la) * ll;
-
-	return [create_node(rx,ry,ra,rl,d), create_node(lx,ly,la,ll,d)];
-}
-
-function loop () {
-	update();
-	draw();
-}
-
-function update () {
-	// Save childs
-	var child_nodes = [];
-	for (var i = 0; i < parent_nodes.length; ++i) {
-		var parent = parent_nodes[i];
-		for (var c = 0; c < parent.childs.length; ++c) {
-			child_nodes.push(parent.childs[c]);
+	
+	var parent_nodes = [];
+	
+	function create_node (x, y, angle, length, depth) {
+		return {
+			x: x,
+			y: y,
+			angle: angle,
+			depth: depth,
+			length: length,
+			childs: [],
 		}
 	}
-
-	// Update array with the childs
-	parent_nodes = [];
-	for (var i = 0; i < child_nodes.length; ++i) {
-		parent_nodes.push(child_nodes[i]);
+	
+	function create_child_nodes (parent_node) {
+		var d = parent_node.depth + 1;
+		// Right child
+		var ra = parent_node.angle + Math.PI / random(3,10);
+		var rl = parent_node.length * 0.8;
+		var rx = parent_node.x + Math.cos(ra) * rl;
+		var ry = parent_node.y - Math.sin(ra) * rl;
+		// Left child
+		var la = parent_node.angle - Math.PI / random(3,10);
+		var ll = parent_node.length * 0.8;
+		var lx = parent_node.x + Math.cos(la) * ll;
+		var ly = parent_node.y - Math.sin(la) * ll;
+	
+		return [create_node(rx,ry,ra,rl,d), create_node(lx,ly,la,ll,d)];
 	}
-
-	// Generate new childs
-	for (var i = 0; i < parent_nodes.length; ++i) {
-		if (parent_nodes[i].depth < vars.max_depth)
-			parent_nodes[i].childs = create_child_nodes(parent_nodes[i])
+	
+	function loop () {
+		update();
+		draw();
 	}
-}
-
-function draw () {
-	for (var i = 0; i < parent_nodes.length; ++i) {
-		var parent = parent_nodes[i];
-		for (var c = 0; c < parent.childs.length; ++c) {
-			var child = parent.childs[c];
-			var w = vars.max_depth - child.depth;
-			draw_line(parent.x, parent.y, child.x, child.y, w + 1);
+	
+	function update () {
+		// Save childs
+		var child_nodes = [];
+		for (var i = 0; i < parent_nodes.length; ++i) {
+			var parent = parent_nodes[i];
+			for (var c = 0; c < parent.childs.length; ++c) {
+				child_nodes.push(parent.childs[c]);
+			}
+		}
+	
+		// Update array with the childs
+		parent_nodes = [];
+		for (var i = 0; i < child_nodes.length; ++i) {
+			parent_nodes.push(child_nodes[i]);
+		}
+	
+		// Generate new childs
+		for (var i = 0; i < parent_nodes.length; ++i) {
+			if (parent_nodes[i].depth < vars.max_depth)
+				parent_nodes[i].childs = create_child_nodes(parent_nodes[i])
 		}
 	}
-}
-
-function draw_line (ox, oy, dx, dy, w) {
-	ctx.beginPath();
-	ctx.moveTo(ox, oy);
-	ctx.lineTo(dx, dy);
-	ctx.lineWidth = w;
-	ctx.strokeStyle = vars.tree_color;
-	ctx.stroke();
-}
-
-window.onload = function () {
-	canv = document.getElementById("gc");
-	ctx = canv.getContext("2d");
-
-	ctx.fillStyle = "white";
+	
+	function draw () {
+		for (var i = 0; i < parent_nodes.length; ++i) {
+			var parent = parent_nodes[i];
+			for (var c = 0; c < parent.childs.length; ++c) {
+				var child = parent.childs[c];
+				var w = vars.max_depth - child.depth;
+				draw_line(parent.x, parent.y, child.x, child.y, w + 1);
+			}
+		}
+	}
+	
+	function draw_line (ox, oy, dx, dy, w) {
+		ctx.beginPath();
+		ctx.moveTo(ox, oy);
+		ctx.lineTo(dx, dy);
+		ctx.lineWidth = w;
+		ctx.strokeStyle = vars.tree_color;
+		ctx.stroke();
+	}
+	
+	window.onload = function () {
+		canv = document.createElement('canvas');
+		canv.width = 400;
+		canv.height = 400;
+		document.body.appendChild(canv);
+		ctx = canv.getContext("2d");
+	
+		ctx.fillStyle = "white";
+		ctx.fillRect(0, 0, canv.width, canv.height);
+	
+		var node = create_node(canv.width/2, canv.height, Math.PI/2, vars.initial_length, 0);
+		var child = create_node(node.x, node.y - node.length, node.angle, node.length, 0);
+		node.childs.push(child);
+		parent_nodes.push(node);
+	
+		ctx.fillStyle = "#f7f6f5";
 	ctx.fillRect(0, 0, canv.width, canv.height);
 
-	var node = create_node(400, 700, Math.PI/2, vars.initial_length, 0);
-	var child = create_node(node.x, node.y - node.length, node.angle, node.length, 0);
-	node.childs.push(child);
-	parent_nodes.push(node);
+		// Initial line
+		draw_line(node.x, node.y, child.x, child.y, vars.max_depth + 1)
+	
+		setInterval(loop, 1000/15);
+	}
+	
+	function random (min, max, round) {
+		  return Math.random() * (max - min + 1) + min;
+	}
+	
+	function random_round (min, max, round) {
+		  return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+	
+	function module (x, y) {
+		return Math.sqrt(square(x) + square(y));
+	}
+	
+	function distance (x1, y1, x2, y2) {
+		return Math.sqrt(square(x1 - x2) + square(y1 - y2));
+	}
+	
+	function square (x) {
+		return x*x;
+	}
+	
+	</script>
+</body>
+</html>
 
-	// Initial line
-	draw_line(node.x, node.y, child.x, child.y, vars.max_depth + 1)
-
-	setInterval(loop, 1000/15);
-}
-
-function random (min, max, round) {
-  	return Math.random() * (max - min + 1) + min;
-}
-
-function random_round (min, max, round) {
-  	return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function module (x, y) {
-	return Math.sqrt(square(x) + square(y));
-}
-
-function distance (x1, y1, x2, y2) {
-	return Math.sqrt(square(x1 - x2) + square(y1 - y2));
-}
-
-function square (x) {
-	return x*x;
-}
-
-</script>
