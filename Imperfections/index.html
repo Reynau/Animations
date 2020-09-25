@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+	<style>
+		html, body { 
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+</head>
+<body>
+<script type="text/javascript" src="Circle.js"></script>
+<script>
+const numOfCircles = 200
+const startAlpha = 55/255
+const endAlpha = 32/255
+
+function generate () {
+  circles = []
+  for (let i=0; i < numOfCircles; ++i) {
+    let minRad = 5 + (0.85+0.15*Math.random())*i/numOfCircles*180
+    let maxRad = 5 + (i+1)/numOfCircles*180
+
+    let r = Math.floor(Math.random()*255)
+    let g = Math.floor(Math.random()*255)
+    let b = Math.floor(Math.random()*255)
+
+    let a = startAlpha + (i/(numOfCircles-1))*(endAlpha - startAlpha)
+    let a0 = 0.67*a
+    
+    let color1 = "rgba("+r+","+g+","+b+","+a+")"
+    let color0 = "rgba("+r+","+g+","+b+","+a0+")"
+
+    let circle = new Circle(center, 5, 150, color0, color1)
+    circle.update()
+    circles.push(circle)
+  }
+}
+
+function render () {
+  circles.forEach(circle => circle.render())
+}
+
+window.onload = function () {
+	canv = document.createElement('canvas')
+	canv.width = 400
+	canv.height = 400
+	document.body.appendChild(canv)
+  ctx = canv.getContext("2d")
+
+  center = {x: canv.width/2, y: canv.height/2}
+  
+  generate()
+  render()
+}
+</script>
+</body>
+</html>
+
+
