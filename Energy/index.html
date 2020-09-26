@@ -14,35 +14,27 @@
 <body>
 <script type="text/javascript" src="Circle.js"></script>
 <script>
-const numOfCircles = 2
+const numOfCircles = 200
 const startAlpha = 55/255
 const endAlpha = 32/255
-
-function generateColors () {
-  let r = Math.floor(Math.random()*255)
-  let g = Math.floor(Math.random()*255)
-  let b = Math.floor(Math.random()*255)
-
-  let a = startAlpha
-  let a0 = 0.67*a
-  
-  let color1 = "rgba("+r+","+g+","+b+","+a+")"
-  let color0 = "rgba("+r+","+g+","+b+","+a0+")"
-
-  return {color1, color0}
-}
 
 function generate () {
   circles = []
   for (let i=0; i < numOfCircles; ++i) {
-    let minRad = 50
-    let maxRad = 70
+    let minRad = 5 + (0.85+0.15*Math.random())*i/numOfCircles*180
+    let maxRad = 5 + (i+1)/numOfCircles*180
 
-    let {color1, color0} = generateColors()
+    let r = Math.floor(Math.random()*255)
+    let g = Math.floor(Math.random()*255)
+    let b = Math.floor(Math.random()*255)
 
-    let center = {x: randomIntFromInterval(0+maxRad, canv.width-maxRad), y: randomIntFromInterval(0+maxRad, canv.height-maxRad)}
+    let a = startAlpha + (i/(numOfCircles-1))*(endAlpha - startAlpha)
+    let a0 = 0.67*a
+    
+    let color1 = "rgba("+r+","+g+","+b+","+a+")"
+    let color0 = "rgba("+r+","+g+","+b+","+a0+")"
 
-    let circle = new Circle(center, minRad, maxRad, color0, color1)
+    let circle = new Circle(center, 5, 150, color0, color1)
     circle.update()
     circles.push(circle)
   }
@@ -63,10 +55,6 @@ window.onload = function () {
   
   generate()
   render()
-}
-
-function randomIntFromInterval(min, max) { // min and max included 
-  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 </script>
 </body>
