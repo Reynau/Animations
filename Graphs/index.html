@@ -13,10 +13,8 @@
 </head>
 <body>
 <script type="text/javascript" src="Circle.js"></script>
-<script type="text/javascript" src="Rect.js"></script>
 <script>
-const numOfCircles = 2
-const numOfRects = 2
+const numOfCircles = 200
 const startAlpha = 55/255
 const endAlpha = 32/255
 
@@ -48,36 +46,16 @@ function generate () {
     circle.update()
     circles.push(circle)
   }
-
-  rects = []
-  for (let i=0; i < numOfRects; ++i) {
-    let minSize = 50
-    let maxSize = 70
-
-    let {color1, color0} = generateColors()
-
-    let position = {x: randomIntFromInterval(0, canv.width-maxSize), y: randomIntFromInterval(0, canv.height-maxSize)}
-
-    let rect = new Rect(
-      position, 
-      randomIntFromInterval(minSize, maxSize), 
-      randomIntFromInterval(minSize, maxSize), 
-      color0, 
-      color1)
-    rect.update()
-    rects.push(rect)
-  }
 }
 
 function render () {
   circles.forEach(circle => circle.render())
-  rects.forEach(rect => rect.render())
 }
 
 window.onload = function () {
 	canv = document.createElement('canvas')
-	canv.width = 400
-	canv.height = 400
+	canv.width = 1500
+	canv.height = 1500
 	document.body.appendChild(canv)
   ctx = canv.getContext("2d")
 
